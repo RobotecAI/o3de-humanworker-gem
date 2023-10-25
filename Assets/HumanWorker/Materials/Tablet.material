@@ -1,0 +1,14 @@
+{
+    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/standardpbr_generated.materialtype",
+    "materialTypeVersion": 5,
+    "propertyValues": {
+        "baseColor.textureBlendMode": "Lerp",
+        "baseColor.textureMap": "../Textures/Tablet_base_color.png",
+        "metallic.textureMap": "../Textures/Tablet_metallic.png",
+        "metallic.textureMapUv": "Unwrapped",
+        "normal.textureMap": "../Textures/Tablet_normal.png",
+        "roughness.textureMap": "../Textures/Tablet_roughness.png",
+        "roughness.textureMapUv": "Unwrapped",
+        "specularF0.factor": 0.6299999952316284
+    }
+}

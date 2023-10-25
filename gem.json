@@ -1,0 +1,29 @@
+{
+    "gem_name": "HumanWorker",
+    "version": "1.0.0",
+    "display_name": "HumanWorker",
+    "license": "CC BY-NC-SA 4.0 DEED",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "origin": "RobotecAI",
+    "origin_url": "https://robotec.ai",
+    "type": "Code",
+    "summary": "Gem for simulating non-player human worker character",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "HumanWorker"
+    ],
+    "platforms": [
+        "Linux"
+    ],
+    "icon_path": "preview.png",
+    "requirements": "This gem requires ROS2, RecastNavigation, and PhysX gems.",
+    "dependencies": [
+        "ROS2",
+        "RecastNavigation",
+        "PhysX"
+    ],
+    "repo_uri": "https://github.com/RobotecAI/o3de-human-npc-gem",
+    "restricted": "HumanWorker"
+}

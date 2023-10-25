@@ -1,0 +1,18 @@
+{
+    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/standardpbr_generated.materialtype",
+    "materialTypeVersion": 5,
+    "propertyValues": {
+        "baseColor.textureBlendMode": "Lerp",
+        "baseColor.textureMap": "../Textures/Cloth_base_color.png",
+        "baseColor.textureMapUv": "Unwrapped",
+        "irradiance.irradianceColorSource": "BaseColor",
+        "normal.textureMap": "../Textures/Cloth_normal.jpg",
+        "normal.textureMapUv": "Unwrapped",
+        "occlusion.diffuseTextureMap": "../Textures/Cloth_ao.png",
+        "occlusion.diffuseTextureMapUv": "Unwrapped",
+        "roughness.lowerBound": 0.009999999776482582,
+        "roughness.textureMap": "../Textures/Cloth_roughness.png",
+        "roughness.textureMapUv": "Unwrapped",
+        "specularF0.factor": 0.10000000149011612
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "Amazon": {
+        "AssetProcessor": {
+            "Settings": {
+                "ScanFolder HumanWorker/Assets": {
+                    "watch": "@GEMROOT:HumanWorker@/Assets",
+                    "recursive": 1,
+                    "order": 101
+                },
+                "ScanFolder HumanWorker/Registry": {
+                    "watch": "@GEMROOT:HumanWorker@/Registry",
+                    "recursive": 1,
+                    "order": 102
+                }
+            }
+        }
+    }
+}
