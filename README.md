@@ -1,3 +1,5 @@
+[![Apache License, Version 2.0][apache_shield]][apache]
+
 # HumanWorker Gem for Open 3D Engine (O3DE)
 
 ## A bit of context
@@ -37,11 +39,11 @@ Human worker objects are delivered as prefabs, containing models and physics, al
 - `Endpoints` is a scene descriptor consisting of the ground truth positions used to build the path for the NPC. Two points are included in this example, but the number of points can be increased. All points need to be added to the `HumanWorkerRobot` prefab `Npc Navigator` component to correctly build the path.
 - `HumanWorkerNavigationMesh` is a scene descriptor component allowing to change the parameters of navigation mesh calculation with [Recast framework](https://recastnav.com). Tunable parameters include the bounding box size for mesh calculation and NPC characteristics. Please note, that all `Endpoints` need to be in the bounding box.
 - `DetourNavigation` is a scene descriptor component for finding the path.
+
 ---
 
 This work is licensed under [Apache License, Version 2.0][apache]. You may elect at your option to use the [MIT License][mit] instead. Contributions must be made under both licenses.
-The visual contents including 3D models, image textures, and other game asset files are licensed under the [Creative Commons Attribution-NonCommercial 4.0 License][cc-by-nc-sa].
 
 [apache]: https://opensource.org/licenses/Apache-2.0
 [mit]: https://opensource.org/licenses/MIT
-[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[apache_shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
