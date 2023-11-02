@@ -218,10 +218,6 @@
                     "Id": 8214888317295398113,
                     "m_template": {
                         "$type": "NpcNavigatorComponent",
-                        "Waypoints": [
-                            "",
-                            ""
-                        ],
                         "Detour Navigation Entity": "",
                         "Topic Configuration": {
                             "Topic": "cmd_vel"

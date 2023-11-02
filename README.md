@@ -26,12 +26,12 @@ In particular, this gem contains the following components:
 ![](docs/images/gem.png)
 
 ## O3DE
-Human worker objects are delivered as prefabs, containing models and physics, along with the required O3DE components. Four prefabs are provided within the gem. The simplest one, `HumanWorkerStatic`, is a prefab combining mesh and textures. It can be used as a decoration in the scene. `HumanWorker` is additionally extended by animations. It does not contain any navigation-related components, therefore only _idle_ animation is used in this case. `HumanWorkerRobot` is a prefab that can be used as a base for the fully functional non-player character (NPC) after adding the description of the scene (waypoints, etc.). This is done in the last prefab, `NavigationExample`, which is a ready-to-use prefab with working navigation.
+Human worker objects are delivered as prefabs, containing models and physics, along with the required O3DE components. Four prefabs are provided within the gem. The simplest one, `HumanWorkerStatic`, is a prefab combining mesh and textures. It can be used as a decoration in the scene. `HumanWorker` is additionally extended by animations. It does not contain any navigation-related components, therefore only _idle_ animation is used in this case. `HumanWorkerRobot` is a prefab that can be used as a base for the fully functional non-player character (NPC) after adding the description of the scene (waypoints, etc.). `HumanWorkerNavigation` is an extension with place holders for such description that should be used in projects. 
 
 ### How to use the Gem: NavigationExample
 ![](docs/images/navigation_example.png)
 
-`NavigationExample` prefab contains all the necessities to run the NPC in the scene. In particular, it consists of the animated mesh with textures, and the scene description in the format used by NPC navigation components. The scene description can be modified to match the required scene by using O3DE _prefab overrides_.
+`NavigationExample` prefab contains all the necessities to run the NPC in the scene. In particular, it consists of the animated mesh with textures, and the scene description in the format used by NPC navigation components. The scene description is added to `HumanWorkerNavigation` prefab using O3DE _prefab overrides_.
 
 ![](docs/images/navigation_example_prefab.png)
 
