@@ -54,6 +54,14 @@
             "Id": "Entity_[126252750932242]",
             "Name": "HumanWorker",
             "Components": {
+                "AnimGraphInputProviderComponent": {
+                    "$type": "GenericComponentWrapper",
+                    "Id": 6509192520673502530,
+                    "m_template": {
+                        "$type": "AnimGraphInputProviderComponent",
+                        "Rigid Body": ""
+                    }
+                },
                 "Component_[10109057209642447477]": {
                     "$type": "EditorPendingCompositionComponent",
                     "Id": 10109057209642447477

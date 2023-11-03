@@ -273,6 +273,11 @@
                     "op": "replace",
                     "path": "/ContainerEntity/Components/Component_[10260911217474375854]/Transform Data/Rotate/2",
                     "value": -89.99999237060547
+                },
+                {
+                    "op": "replace",
+                    "path": "/Entities/Entity_[126252750932242]/Components/AnimGraphInputProviderComponent/m_template/Rigid Body",
+                    "value": "../Entity_[66011467218485]"
                 }
             ]
         }

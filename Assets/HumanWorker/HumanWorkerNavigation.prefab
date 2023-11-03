@@ -395,20 +395,6 @@
                     "op": "replace",
                     "path": "/ContainerEntity/Components/TransformComponent/Transform Data/Translate/1",
                     "value": 0.0
-                },
-                {
-                    "op": "add",
-                    "path": "/Instances/Instance_[2744578779163]/Entities/Entity_[126252750932242]/Components/AnimGraphInputProviderComponent",
-                    "value": {
-                        "$type": "GenericComponentWrapper",
-                        "Id": 11044081364049119711,
-                        "m_template": {
-                            "$type": "AnimGraphInputProviderComponent",
-                            "Id": 0,
-                            "Rigid Body": "../Entity_[66011467218485]",
-                            "Linear Speed Multiplier": 0.05000000074505806
-                        }
-                    }
                 }
             ]
         }

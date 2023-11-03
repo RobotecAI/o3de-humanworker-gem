@@ -546,20 +546,6 @@
                 },
                 {
                     "op": "add",
-                    "path": "/Instances/Instance_[2744578779163]/Entities/Entity_[126252750932242]/Components/AnimGraphInputProviderComponent",
-                    "value": {
-                        "$type": "GenericComponentWrapper",
-                        "Id": 2397692274848629519,
-                        "m_template": {
-                            "$type": "AnimGraphInputProviderComponent",
-                            "Id": 0,
-                            "Rigid Body": "../Entity_[66011467218485]",
-                            "Linear Speed Multiplier": 0.05000000074505806
-                        }
-                    }
-                },
-                {
-                    "op": "add",
                     "path": "/Entities/Entity_[66011467218485]/Components/NpcNavigatorComponent/m_template/Waypoints/0",
                     "value": "../Entity_[9871273853548]"
                 },
