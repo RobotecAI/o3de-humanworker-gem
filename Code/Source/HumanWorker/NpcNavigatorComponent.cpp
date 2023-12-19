@@ -65,7 +65,7 @@ namespace ROS2::HumanWorker
 
     void NpcNavigatorComponent::Activate()
     {
-        m_publisher = CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_topicConfiguration);
+        m_publisher = CreatePublisher(GetEntity()->FindComponent<ROS2::ROS2FrameComponent>(), m_topicConfiguration);
 
         AZ::TickBus::Handler::BusConnect();
         RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(GetNavigationMeshEntityId(m_navigationEntity));
