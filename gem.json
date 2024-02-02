@@ -22,7 +22,7 @@
     "dependencies": [
         "ROS2",
         "RecastNavigation",
-        "PhysX"
+        "PhysX5"
     ],
     "repo_uri": "https://github.com/RobotecAI/o3de-human-npc-gem",
     "restricted": "HumanWorker"
