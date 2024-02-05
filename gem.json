@@ -20,7 +20,7 @@
     "icon_path": "preview.png",
     "requirements": "This gem requires ROS2, RecastNavigation, and PhysX gems.",
     "dependencies": [
-        "ROS2",
+        "ROS2==3.0.0",
         "RecastNavigation",
         "PhysX5"
     ],
