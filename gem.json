@@ -1,6 +1,6 @@
 {
     "gem_name": "HumanWorker",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "display_name": "HumanWorker",
     "license": "Apache-2.0",
     "license_url": "https://opensource.org/licenses/Apache-2.0",
@@ -20,9 +20,9 @@
     "icon_path": "preview.png",
     "requirements": "This gem requires ROS2, RecastNavigation, and PhysX gems.",
     "dependencies": [
-        "ROS2",
+        "ROS2==3.1.0",
         "RecastNavigation",
-        "PhysX"
+        "PhysX5"
     ],
     "repo_uri": "https://github.com/RobotecAI/o3de-human-npc-gem",
     "restricted": "HumanWorker"
