@@ -42,9 +42,10 @@ namespace ROS2::HumanWorker
         ~NpcNavigatorComponent() override = default;
 
         static void Reflect(AZ::ReflectContext* context);
-        // clang-format off
-        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required) {}
-        // clang-format on
+        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
+        {
+            required.push_back(AZ_CRC_CE("ROS2Frame"));
+        }
 
         // AZ::Component overrides
         void Activate() override;
@@ -70,12 +71,7 @@ namespace ROS2::HumanWorker
             AZ::Vector3 m_direction{};
         };
 
-        static constexpr float AcceptableDistanceError = 0.5f;
-        static constexpr float AcceptableAngleError = 0.1f;
-        // clang-format off
-        static bool IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2) { return vector1.GetDistance(vector2) < AcceptableDistanceError; }
-        // clang-format on
-
+        static bool IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError);
         static AZ::Transform GetEntityTransform(AZ::EntityId entityId);
         // Assumes that the argument vectors lie in the XY plane.
         static float GetSignedAngleBetweenUnitVectors(AZ::Vector3 unitVector1, AZ::Vector3 unitVector2);
@@ -123,6 +119,8 @@ namespace ROS2::HumanWorker
         float m_linearSpeed{ 1.5f };
         float m_angularSpeed{ 1.0f };
         float m_crossTrackFactor{ 0.1f };
+        float m_acceptableDistanceError{ 0.5f };
+        float m_acceptableAngleError{ 0.1f };
 
         AZStd::vector<AZ::EntityId> m_waypointEntities;
         AZStd::vector<GoalPose> m_goalPath;
