@@ -34,7 +34,9 @@ namespace ROS2::HumanWorker
                 ->Field("Topic Configuration", &NpcNavigatorComponent::m_topicConfiguration)
                 ->Field("Linear Speed", &NpcNavigatorComponent::m_linearSpeed)
                 ->Field("Angular Speed", &NpcNavigatorComponent::m_angularSpeed)
-                ->Field("Cross Track Factor", &NpcNavigatorComponent::m_crossTrackFactor);
+                ->Field("Cross Track Factor", &NpcNavigatorComponent::m_crossTrackFactor)
+                ->Field("Acceptable Distance Error", &NpcNavigatorComponent::m_acceptableDistanceError)
+                ->Field("Acceptable Angle Error", &NpcNavigatorComponent::m_acceptableAngleError);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
@@ -57,7 +59,9 @@ namespace ROS2::HumanWorker
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_topicConfiguration, "Topic Configuration", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_linearSpeed, "Linear Speed", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_angularSpeed, "Angular Speed", "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_crossTrackFactor, "Cross Track Factor", "");
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_crossTrackFactor, "Cross Track Factor", "")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableDistanceError, "Acceptable Distance Error", "")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableAngleError, "Acceptable Angle Error", "");
                 // clang-format on
             }
         }
@@ -85,6 +89,13 @@ namespace ROS2::HumanWorker
         }
         RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusDisconnect();
         AZ::TickBus::Handler::BusDisconnect();
+    }
+
+    bool NpcNavigatorComponent::IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError)
+    {
+        AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY()};
+        AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY()};
+        return vector21.GetDistance(vector22) < acceptableDistanceError;
     }
 
     AZ::Transform NpcNavigatorComponent::GetEntityTransform(AZ::EntityId entityId)
@@ -292,7 +303,7 @@ namespace ROS2::HumanWorker
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);
 
-                if (std::abs(BearingError) < AcceptableAngleError)
+                if (std::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
                     return {};
@@ -306,7 +317,7 @@ namespace ROS2::HumanWorker
                 }
             }
         case NavigationState::Navigate:
-            if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation()))
+            if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation(), m_acceptableDistanceError))
             {
                 if (++m_goalIndex == m_goalPath.size())
                 {

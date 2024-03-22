@@ -1,45 +1,24 @@
 {
-    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/skin_generated.materialtype",
-    "materialTypeVersion": 4,
+    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/standardpbr_generated.materialtype",
+    "materialTypeVersion": 5,
     "propertyValues": {
-        "baseColor.textureBlendMode": "Lerp",
-        "baseColor.textureMap": "../Textures/Body_base_color.png",
-        "detailLayerGroup.blendDetailMask": "../Textures/Body_base_color.png",
-        "detailLayerGroup.enableBaseColor": true,
-        "detailLayerGroup.enableNormals": true,
-        "normal.factor": 0.30000001192092896,
-        "normal.flipX": true,
-        "normal.textureMap": "../Textures/Body_normal.png",
-        "occlusion.diffuseFactor": 0.6600000262260437,
-        "occlusion.diffuseTextureMap": "../Textures/Body_ao.png",
-        "occlusion.diffuseTextureMapUv": "Unwrapped",
-        "roughness.lowerBound": 0.6000000238418579,
-        "roughness.textureMap": "../Textures/Body_roughness.png",
-        "roughness.upperBound": 0.10000000149011612,
-        "specularF0.factor": 0.09000000357627869,
-        "subsurfaceScattering.enableSubsurfaceScattering": true,
-        "subsurfaceScattering.influenceMap": "../Textures/Body_transmission.png",
-        "subsurfaceScattering.quality": 0.3199999928474426,
-        "subsurfaceScattering.scatterColor": [
-            1.0,
-            0.23453116416931152,
-            0.04872205853462219,
+        "baseColor.color": [
+            0.800000011920929,
+            0.800000011920929,
+            0.800000011920929,
             1.0
         ],
-        "subsurfaceScattering.scatterDistance": 1.0,
-        "subsurfaceScattering.subsurfaceScatterFactor": 0.44999998807907104,
-        "subsurfaceScattering.thickness": 0.03999999910593033,
-        "subsurfaceScattering.thicknessMap": "../Textures/Body_sss.png",
-        "subsurfaceScattering.transmissionAttenuation": 0.800000011920929,
-        "subsurfaceScattering.transmissionDistortion": 0.009999999776482582,
-        "subsurfaceScattering.transmissionMode": "ThickObject",
-        "subsurfaceScattering.transmissionPower": 1.7999999523162842,
-        "subsurfaceScattering.transmissionScale": 0.20000000298023224,
-        "subsurfaceScattering.transmissionTint": [
-            0.7968719005584717,
-            0.4905775487422943,
-            0.2383764386177063,
+        "baseColor.textureMap": "../Textures/Body_base_color.png",
+        "emissive.color": [
+            0.0,
+            0.0,
+            0.0,
             1.0
-        ]
+        ],
+        "normal.textureMap": "../Textures/Body_normal.png",
+        "opacity.factor": 1.0,
+        "roughness.factor": 0.827063798904419,
+        "roughness.textureMap": "../Textures/Body_roughness.png",
+        "specularF0.textureMap": "../Textures/Body_sss.png"
     }
 }
