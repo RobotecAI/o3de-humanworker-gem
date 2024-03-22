@@ -81,7 +81,7 @@ namespace ROS2::HumanWorker
             AZ_Printf(__func__, "No waypoint entities to select from.") return {};
         }
 
-        std::uniform_int_distribution<size_t> uniformDistribution(0, m_waypoints.size());
+        std::uniform_int_distribution<size_t> uniformDistribution(0, m_waypoints.size() - 1);
         AZStd::vector<AZ::EntityId> waypointPath;
         while (waypointPath.size() != m_waypoints.size())
         {
