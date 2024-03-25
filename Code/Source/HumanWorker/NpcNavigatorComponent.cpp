@@ -231,11 +231,11 @@ namespace ROS2::HumanWorker
         }
 
         m_waypointConfiguration = FetchWaypointConfiguration(WaypointEntity);
-        return ConstructGoalPath(PositionPath);
+        return ConstructGoalPath(PositionPath, GetEntityTransform(WaypointEntity).GetRotation());
     }
 
     AZStd::vector<NpcNavigatorComponent::GoalPose> NpcNavigatorComponent::ConstructGoalPath(
-        const AZStd::vector<AZ::Vector3>& positionPath) const
+        const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion waypointOrientation) const
     {
         AZStd::vector<GoalPose> goalPath;
         for (size_t i = 0; i < positionPath.size(); ++i)
@@ -248,6 +248,10 @@ namespace ROS2::HumanWorker
             if (nextIt != positionPath.end())
             {
                 direction = (*nextIt - *it).GetNormalized();
+            }
+            else
+            {
+                direction = waypointOrientation.TransformVector(AZ::Vector3::CreateAxisX());
             }
             goalPath.push_back({ .m_position = positionPath[i], .m_direction = direction });
         }
@@ -305,11 +309,13 @@ namespace ROS2::HumanWorker
 
                 if (std::abs(BearingError) < m_acceptableAngleError)
                 {
+                    AZ_Printf(__func__, "No need to adjust")
                     m_state = NavigationState::Idle;
                     return {};
                 }
                 else
                 {
+                    AZ_Printf(__func__, "Adjusting")
                     return {
                         .m_linear = 0.0f,
                         .m_angular = m_angularSpeed * BearingError,
