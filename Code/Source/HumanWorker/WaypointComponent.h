@@ -14,15 +14,6 @@
 
 namespace ROS2::HumanWorker
 {
-    struct WaypointConfiguration
-    {
-        AZ_TYPE_INFO(WaypointConfiguration, "{7b416d78-90b1-410a-a85a-835a4fc27e4a}");
-        static void Reflect(AZ::ReflectContext* context);
-
-        bool m_orientationCaptured{ false };
-        float m_idleTime{ 0 };
-    };
-
     //! Component that signifies a waypoint.
     //! The waypoint may be configured to capture its orientation
     //! (only the rotation around the z axis) or require an idle time.
