@@ -3,5 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0 OR MIT
 set(FILES
+    Include/HumanWorker/NpcNavigatorBus.h
+    Include/HumanWorker/WaypointBus.h
     Source/HumanWorkerModule.cpp
 )

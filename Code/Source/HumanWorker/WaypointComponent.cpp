@@ -10,34 +10,6 @@
 
 namespace ROS2::HumanWorker
 {
-    void WaypointConfiguration::Reflect(AZ::ReflectContext* context)
-    {
-        if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
-        {
-            serializeContext->Class<WaypointConfiguration>()
-                ->Version(1)
-                ->Field("Orientation captured", &WaypointConfiguration::m_orientationCaptured)
-                ->Field("Idle time", &WaypointConfiguration::m_idleTime);
-
-            if (AZ::EditContext* editContext = serializeContext->GetEditContext())
-            {
-                // clang-format off
-                editContext->Class<WaypointConfiguration>("Waypoint Configuration", "Waypoint Configuration")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default,
-                        &WaypointConfiguration::m_orientationCaptured,
-                        "Orientation captured",
-                        "Should the waypoint orientation be captured?")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default,
-                        &WaypointConfiguration::m_idleTime,
-                        "Idle time",
-                        "Time spent at waypoint.");
-                // clang-format on
-            }
-        }
-    }
-
     void WaypointComponent::Reflect(AZ::ReflectContext* context)
     {
         WaypointConfiguration::Reflect(context);
