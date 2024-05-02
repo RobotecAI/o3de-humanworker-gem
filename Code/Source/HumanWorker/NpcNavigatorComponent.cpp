@@ -93,8 +93,8 @@ namespace ROS2::HumanWorker
 
     bool NpcNavigatorComponent::IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError)
     {
-        AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY()};
-        AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY()};
+        AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY() };
+        AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY() };
         return vector21.GetDistance(vector22) < acceptableDistanceError;
     }
 
@@ -309,13 +309,11 @@ namespace ROS2::HumanWorker
 
                 if (std::abs(BearingError) < m_acceptableAngleError)
                 {
-                    AZ_Printf(__func__, "No need to adjust")
                     m_state = NavigationState::Idle;
                     return {};
                 }
                 else
                 {
-                    AZ_Printf(__func__, "Adjusting")
                     return {
                         .m_linear = 0.0f,
                         .m_angular = m_angularSpeed * BearingError,
