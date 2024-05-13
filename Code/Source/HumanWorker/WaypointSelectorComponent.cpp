@@ -66,12 +66,8 @@ namespace ROS2::HumanWorker
 
     void WaypointSelectorComponent::OnEntityActivated(const AZ::EntityId& entityId)
     {
-        NpcNavigatorRequestBus::Event(entityId, &NpcNavigatorRequests::ClearWaypoints);
-        const AZStd::vector<AZ::EntityId> Waypoints = SelectWaypointPah();
-        for (AZ::EntityId waypointEntityId : Waypoints)
-        {
-            NpcNavigatorRequestBus::Event(entityId, &NpcNavigatorRequests::AddWaypoint, waypointEntityId);
-        }
+        const AZStd::vector<AZ::EntityId> waypoints = SelectWaypointPah();
+        NpcNavigatorRequestBus::Event(entityId, &NpcNavigatorRequests::SelectWaypointPath, waypoints);
     }
 
     AZStd::vector<AZ::EntityId> WaypointSelectorComponent::SelectWaypointPah()
@@ -81,18 +77,8 @@ namespace ROS2::HumanWorker
             AZ_Printf(__func__, "No waypoint entities to select from.") return {};
         }
 
-        std::uniform_int_distribution<size_t> uniformDistribution(0, m_waypoints.size() - 1);
-        AZStd::vector<AZ::EntityId> waypointPath;
-        while (waypointPath.size() != m_waypoints.size())
-        {
-            size_t index = uniformDistribution(m_mersenneTwister);
-            while (!waypointPath.empty() && (m_waypoints[index] == waypointPath.back())) // Disallow duplicate waypoint sequences.
-            {
-                index = uniformDistribution(m_mersenneTwister);
-            }
-
-            waypointPath.push_back(m_waypoints[index]);
-        }
+        AZStd::vector<AZ::EntityId> waypointPath = m_waypoints;
+        std::shuffle(waypointPath.begin(), waypointPath.end(), m_mersenneTwister);
 
         return waypointPath;
     }

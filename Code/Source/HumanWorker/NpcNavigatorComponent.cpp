@@ -196,18 +196,14 @@ namespace ROS2::HumanWorker
         RecalculateCurrentGoalPath();
     }
 
-    void NpcNavigatorComponent::ClearWaypoints()
+    void NpcNavigatorComponent::SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds)
     {
         m_goalIndex = 0;
         m_goalPath.clear();
         m_state = NavigationState::Navigate;
         m_waypointIndex = 0;
         m_waypointEntities.clear();
-    }
-
-    void NpcNavigatorComponent::AddWaypoint(AZ::EntityId waypointEntityId)
-    {
-        m_waypointEntities.push_back(waypointEntityId);
+        m_waypointEntities = waypointEntityIds;
     }
 
     AZ::Transform NpcNavigatorComponent::GetCurrentTransform() const
