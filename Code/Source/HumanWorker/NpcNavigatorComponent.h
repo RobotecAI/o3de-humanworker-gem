@@ -95,8 +95,7 @@ namespace ROS2::HumanWorker
         }
 
         // NpcNavigatorRequestBus overrides
-        void ClearWaypoints() override;
-        void AddWaypoint(AZ::EntityId waypointEntityId) override;
+        void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) override;
 
         [[nodiscard]] AZ::Transform GetCurrentTransform() const;
 
