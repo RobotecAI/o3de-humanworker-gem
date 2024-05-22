@@ -23,6 +23,7 @@ namespace ROS2::HumanWorker
 {
     void NpcNavigatorComponent::Reflect(AZ::ReflectContext* context)
     {
+        NpcNavigatorRequests::Reflect(context);
         if (auto* serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serialize->Class<NpcNavigatorComponent, AZ::Component>()
@@ -204,6 +205,16 @@ namespace ROS2::HumanWorker
         m_waypointIndex = 0;
         m_waypointEntities.clear();
         m_waypointEntities = waypointEntityIds;
+    }
+
+    void NpcNavigatorComponent::SetLinearSpeed(const float linearSpeed)
+    {
+        m_linearSpeed = linearSpeed;
+    }
+
+    void NpcNavigatorComponent::SetAngularSpeed(const float angularSpeed)
+    {
+        m_angularSpeed = angularSpeed;
     }
 
     AZ::Transform NpcNavigatorComponent::GetCurrentTransform() const

@@ -96,6 +96,8 @@ namespace ROS2::HumanWorker
 
         // NpcNavigatorRequestBus overrides
         void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) override;
+        void SetLinearSpeed(const float linearSpeed) override;
+        void SetAngularSpeed(const float angularSpeed) override;
 
         [[nodiscard]] AZ::Transform GetCurrentTransform() const;
 

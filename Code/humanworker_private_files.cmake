@@ -15,4 +15,5 @@ set(FILES
     Source/HumanWorker/WaypointSelectorComponent.h
     Source/HumanWorkerModuleInterface.cpp
     Source/HumanWorkerModuleInterface.h
+    Source/HumanWorker/NpcNavigatorBus.cpp
 )

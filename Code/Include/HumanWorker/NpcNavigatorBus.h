@@ -9,6 +9,7 @@
 #pragma once
 
 #include <AzCore/Component/EntityId.h>
+#include <AzCore/RTTI/ReflectContext.h>
 #include <AzCore/EBus/EBus.h>
 
 namespace ROS2::HumanWorker
@@ -20,6 +21,10 @@ namespace ROS2::HumanWorker
         virtual ~NpcNavigatorRequests() = default;
 
         virtual void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) = 0;
+        virtual void SetLinearSpeed(const float linearSpeed) = 0;
+        virtual void SetAngularSpeed(const float angularSpeed) = 0;
+
+        static void Reflect(AZ::ReflectContext* context);
     };
 
     class NpcNavigatorRequestBusTraits : public AZ::EBusTraits
