@@ -306,6 +306,8 @@ namespace ROS2::HumanWorker
                 if (std::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
+                    NpcNavigatorNotificationBus::Event(
+                        GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
                     return {};
                 }
                 else
@@ -321,7 +323,16 @@ namespace ROS2::HumanWorker
             {
                 if (++m_goalIndex == m_goalPath.size())
                 {
-                    m_state = m_waypointConfiguration.m_orientationCaptured ? NavigationState::Rotate : NavigationState::Idle;
+                    if (m_waypointConfiguration.m_orientationCaptured)
+                    {
+                        m_state = NavigationState::Rotate;
+                    }
+                    else
+                    {
+                        m_state = NavigationState::Idle;
+                        NpcNavigatorNotificationBus::Event(
+                            GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
+                    }
                     return {};
                 }
             }
