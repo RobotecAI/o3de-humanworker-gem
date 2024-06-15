@@ -11,6 +11,8 @@
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/EBus/EBus.h>
 
+#include <HumanWorker/WaypointBus.h>
+
 namespace ROS2::HumanWorker
 {
     class NpcNavigatorRequests
@@ -34,4 +36,20 @@ namespace ROS2::HumanWorker
     };
 
     using NpcNavigatorRequestBus = AZ::EBus<NpcNavigatorRequests, NpcNavigatorRequestBusTraits>;
+
+    class NpcNavigatorNotifications
+        : public AZ::EBusTraits
+    {
+    public:
+        //////////////////////////////////////////////////////////////////////////
+        // EBusTraits overrides
+        static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Multiple;
+        static const AZ::EBusAddressPolicy AddressPolicy = AZ::EBusAddressPolicy::ById;
+        using BusIdType = AZ::EntityId;
+        //////////////////////////////////////////////////////////////////////////
+
+        virtual void OnWaypointReached([[maybe_unused]] WaypointConfiguration waypointConfig) {}
+    };
+
+    using NpcNavigatorNotificationBus = AZ::EBus<NpcNavigatorNotifications>;
 } // namespace ROS2::HumanWorker
