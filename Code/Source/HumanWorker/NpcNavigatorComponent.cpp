@@ -8,7 +8,9 @@
  */
 #include <HumanWorker/NpcNavigatorComponent.h>
 
+#include <AzCore/Component/Component.h>
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/Math/Vector3.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>
@@ -21,6 +23,12 @@
 
 namespace ROS2::HumanWorker
 {
+    NpcNavigatorComponent::NpcNavigatorComponent()
+    {
+        m_twistTopicConfiguration.m_topic = "cmd_vel";
+        m_twistTopicConfiguration.m_type = "geometry_msgs::msg::Twist";
+    }
+
     void NpcNavigatorComponent::Reflect(AZ::ReflectContext* context)
     {
         if (auto* serialize = azrtti_cast<AZ::SerializeContext*>(context))
@@ -28,10 +36,8 @@ namespace ROS2::HumanWorker
             serialize->Class<NpcNavigatorComponent, AZ::Component>()
                 ->Version(1)
                 ->Field("Debug Mode", &NpcNavigatorComponent::m_debugMode)
-                ->Field("Restart on traversed", &NpcNavigatorComponent::m_restartOnTraversed)
-                ->Field("Waypoints", &NpcNavigatorComponent::m_waypointEntities)
                 ->Field("Detour Navigation Entity", &NpcNavigatorComponent::m_navigationEntity)
-                ->Field("Topic Configuration", &NpcNavigatorComponent::m_topicConfiguration)
+                ->Field("Twist Topic Configuration", &NpcNavigatorComponent::m_twistTopicConfiguration)
                 ->Field("Linear Speed", &NpcNavigatorComponent::m_linearSpeed)
                 ->Field("Angular Speed", &NpcNavigatorComponent::m_angularSpeed)
                 ->Field("Cross Track Factor", &NpcNavigatorComponent::m_crossTrackFactor)
@@ -40,36 +46,35 @@ namespace ROS2::HumanWorker
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
-                // clang-format off
-                editContext->Class<NpcNavigatorComponent>(
-                                    "Npc Navigator",
-                                    "Component used for navigating an npc along a selected waypoint path."
-                                    "It processes paths and publishes twist messages")
-                    ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                        ->Attribute(AZ::Edit::Attributes::Category, "HumanWorker")
-                        ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
+                editContext
+                    ->Class<NpcNavigatorComponent>(
+                        "Npc Navigator base",
+                        "Component used for navigating an npc along a path."
+                        "It processes paths and publishes twist messages")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_debugMode, "Debug Mode", "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_restartOnTraversed, "Restart on traversed", "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_waypointEntities, "Waypoints", "")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &NpcNavigatorComponent::m_navigationEntity,
                         "Detour Navigation Entity",
                         "Entity with the Detour Navigation Component")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_topicConfiguration, "Topic Configuration", "")
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_twistTopicConfiguration, "Topic Configuration", "")
+                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Twist control topic")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_linearSpeed, "Linear Speed", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_angularSpeed, "Angular Speed", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_crossTrackFactor, "Cross Track Factor", "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableDistanceError, "Acceptable Distance Error", "")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableAngleError, "Acceptable Angle Error", "");
-                // clang-format on
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableDistanceError, "Acceptable Distance Error", "")
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_acceptableAngleError, "Acceptable Angle Error", "");
             }
         }
     }
 
     void NpcNavigatorComponent::Activate()
     {
-        m_publisher = CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_topicConfiguration);
+        m_publisher =
+            CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_twistTopicConfiguration);
 
         AZ::TickBus::Handler::BusConnect();
         RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(GetNavigationMeshEntityId(m_navigationEntity));
@@ -77,12 +82,12 @@ namespace ROS2::HumanWorker
         {
             AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(m_entity->GetId());
         }
-        NpcNavigatorRequestBus::Handler::BusConnect(GetEntityId());
+
+        m_startPosition = GetCurrentTransform().GetTranslation();
     }
 
     void NpcNavigatorComponent::Deactivate()
     {
-        NpcNavigatorRequestBus::Handler::BusDisconnect();
         if (m_debugMode)
         {
             AzFramework::EntityDebugDisplayEventBus::Handler::BusDisconnect(m_entity->GetId());
@@ -119,7 +124,7 @@ namespace ROS2::HumanWorker
     }
 
     NpcNavigatorComponent::Speed NpcNavigatorComponent::CalculateSpeedForGoal(
-        const AZ::Transform& currentTransform, GoalPose goal, Speed maxSpeed, float crossTrackFactor)
+        const AZ::Transform& currentTransform, GoalPose goal, AZ::Vector3 startPosition, Speed maxSpeed, float crossTrackFactor)
     {
         const AZ::Vector3 RobotPosition = currentTransform.GetTranslation();
         const AZ::Vector3 RobotDirection = currentTransform.GetBasisX().GetNormalized();
@@ -131,17 +136,14 @@ namespace ROS2::HumanWorker
             bearingError = GetSignedAngleBetweenUnitVectors(RobotDirection, GoalDirection);
         }
 
-        const AZ::Vector3 GoalToRobot = RobotPosition - goal.m_position;
-        const float CrossTrackError = goal.m_direction.Cross(GoalToRobot).GetLength();
+        const AZ::Vector3 zeroZ = AZ::Vector3::CreateOne() - AZ::Vector3::CreateAxisZ(1);
 
-        return Speed{ .m_linear = maxSpeed.m_linear, .m_angular = bearingError * maxSpeed.m_angular - CrossTrackError * crossTrackFactor };
-    }
+        const AZ::Vector3 routeVector = (goal.m_position - startPosition) * zeroZ;
+        const AZ::Vector3 positionVector = (RobotPosition - startPosition) * zeroZ;
+        const AZ::Vector3 crossProduct = routeVector.Cross(positionVector);
+        const float crossTrackError = (crossProduct.GetLength() / routeVector.GetLength()) * (crossProduct.GetZ() > 0 ? 1 : -1);
 
-    WaypointConfiguration NpcNavigatorComponent::FetchWaypointConfiguration(AZ::EntityId waypointEntityId)
-    {
-        WaypointConfiguration waypointConfiguration;
-        WaypointRequestBus::EventResult(waypointConfiguration, waypointEntityId, &WaypointRequests::GetConfiguration);
-        return waypointConfiguration;
+        return Speed{ .m_linear = maxSpeed.m_linear, .m_angular = bearingError * maxSpeed.m_angular - crossTrackError * crossTrackFactor };
     }
 
     NpcNavigatorComponent::PublisherPtr NpcNavigatorComponent::CreatePublisher(
@@ -196,38 +198,9 @@ namespace ROS2::HumanWorker
         RecalculateCurrentGoalPath();
     }
 
-    void NpcNavigatorComponent::SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds)
-    {
-        m_goalIndex = 0;
-        m_goalPath.clear();
-        m_state = NavigationState::Navigate;
-        m_waypointIndex = 0;
-        m_waypointEntities.clear();
-        m_waypointEntities = waypointEntityIds;
-    }
-
     AZ::Transform NpcNavigatorComponent::GetCurrentTransform() const
     {
         return GetEntityTransform(GetEntityId());
-    }
-
-    AZStd::vector<NpcNavigatorComponent::GoalPose> NpcNavigatorComponent::TryFindGoalPath()
-    {
-        if (m_waypointIndex >= m_waypointEntities.size())
-        {
-            return {};
-        }
-
-        const AZ::EntityId WaypointEntity = m_waypointEntities[m_waypointIndex];
-        const AZStd::vector<AZ::Vector3> PositionPath =
-            FindPathBetweenPositions(GetCurrentTransform().GetTranslation(), GetEntityTransform(WaypointEntity).GetTranslation());
-        if (PositionPath.empty())
-        {
-            return {};
-        }
-
-        m_waypointConfiguration = FetchWaypointConfiguration(WaypointEntity);
-        return ConstructGoalPath(PositionPath, GetEntityTransform(WaypointEntity).GetRotation());
     }
 
     AZStd::vector<NpcNavigatorComponent::GoalPose> NpcNavigatorComponent::ConstructGoalPath(
@@ -276,83 +249,5 @@ namespace ROS2::HumanWorker
         cmdVelMessage.angular.z = speed.m_angular;
 
         m_publisher->publish(cmdVelMessage);
-    }
-
-    NpcNavigatorComponent::Speed NpcNavigatorComponent::CalculateSpeed(float deltaTime)
-    {
-        switch (m_state)
-        {
-        case NavigationState::Idle:
-            if ((m_waypointConfiguration.m_idleTime -= deltaTime) <= 0.0f)
-            {
-                m_goalIndex = 0;
-                if (++m_waypointIndex >= m_waypointEntities.size() && m_restartOnTraversed)
-                {
-                    m_waypointIndex = 0;
-                }
-                m_goalPath.clear();
-                m_waypointConfiguration = FetchWaypointConfiguration(m_waypointEntities[m_waypointIndex]);
-                m_state = NavigationState::Navigate;
-            }
-            return {};
-        case NavigationState::Rotate:
-            {
-                AZ_Assert(
-                    m_goalIndex == m_goalPath.size(), "The Npc Navigator component is in an invalid state due to programmer's error.");
-                const float BearingError = GetSignedAngleBetweenUnitVectors(
-                    GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
-                    m_goalPath[m_goalIndex - 1].m_direction);
-
-                if (AZStd::abs(BearingError) < m_acceptableAngleError)
-                {
-                    m_state = NavigationState::Idle;
-                    NpcNavigatorNotificationBus::Event(
-                        GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
-                    return {};
-                }
-                else
-                {
-                    return {
-                        .m_linear = 0.0f,
-                        .m_angular = m_angularSpeed * BearingError,
-                    };
-                }
-            }
-        case NavigationState::Navigate:
-            if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation(), m_acceptableDistanceError))
-            {
-                if (++m_goalIndex == m_goalPath.size())
-                {
-                    if (m_waypointConfiguration.m_orientationCaptured)
-                    {
-                        m_state = NavigationState::Rotate;
-                    }
-                    else
-                    {
-                        m_state = NavigationState::Idle;
-                        NpcNavigatorNotificationBus::Event(
-                            GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
-                    }
-                    return {};
-                }
-            }
-
-            return CalculateSpeedForGoal(
-                GetCurrentTransform(),
-                m_goalPath[m_goalIndex],
-                { .m_linear = m_linearSpeed, .m_angular = m_angularSpeed },
-                m_crossTrackFactor);
-        }
-    }
-
-    void NpcNavigatorComponent::RecalculateCurrentGoalPath()
-    {
-        if (m_waypointIndex == m_waypointEntities.size())
-        {
-            return;
-        }
-
-        m_goalIndex = 0;
-        m_goalPath = TryFindGoalPath();
     }
 } // namespace ROS2::HumanWorker
