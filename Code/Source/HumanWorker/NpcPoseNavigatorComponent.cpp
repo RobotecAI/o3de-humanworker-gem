@@ -36,8 +36,10 @@ namespace ROS2::HumanWorker
     {
         if (auto* serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
-            serialize->Class<NpcPoseNavigatorComponent, NpcNavigatorComponent>()->Version(1)->Field(
-                "Pose Topic Configuration", &NpcPoseNavigatorComponent::m_poseTopicConfiguration);
+            serialize->Class<NpcPoseNavigatorComponent, NpcNavigatorComponent>()
+                ->Version(1)
+                ->Field("Pose Topic Configuration", &NpcPoseNavigatorComponent::m_poseTopicConfiguration)
+                ->Field("World Frame", &NpcPoseNavigatorComponent::m_worldFrame);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
@@ -51,7 +53,8 @@ namespace ROS2::HumanWorker
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_poseTopicConfiguration, "Topic Configuration", "")
-                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Pose waypoints topic");
+                    ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Pose waypoints topic")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_worldFrame, "World Frame", "");
             }
         }
     }
@@ -62,15 +65,42 @@ namespace ROS2::HumanWorker
         const auto* ros2_frame_component = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
         auto namespaced_topic_name =
             ROS2::ROS2Names::GetNamespacedName(ros2_frame_component->GetNamespace(), m_poseTopicConfiguration.m_topic);
+
+        m_tfBuffer = std::make_unique<tf2_ros::Buffer>(ros2Node->get_clock());
+        m_tfListener = std::make_unique<tf2_ros::TransformListener>(*m_tfBuffer);
+
         m_poseSubscription = ros2Node->create_subscription<geometry_msgs::msg::PoseStamped>(
             namespaced_topic_name.data(),
             m_poseTopicConfiguration.GetQoS(),
             [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg)
             {
                 AZStd::lock_guard<AZStd::mutex> lock(m_goalPoseQueueMutex);
-                const AZ::Transform transform = ROS2::ROS2Conversions::FromROS2Pose(msg->pose);
+                geometry_msgs::msg::PoseStamped::SharedPtr goalPoseMsg;
+                // m_tfBuffer->transform(*msg, *goalPoseMsg, m_worldFrame.c_str());
 
-                m_goalPoseQueue.push({ transform.GetTranslation(), transform.GetRotation().GetEulerRadians() });
+                geometry_msgs::msg::TransformStamped transformStamped;
+                if (msg->header.frame_id != "")
+                {
+                    if (m_tfBuffer->canTransform(m_worldFrame.c_str(), msg->header.frame_id, tf2::TimePointZero))
+                    {
+                        transformStamped = m_tfBuffer->lookupTransform(m_worldFrame.c_str(), msg->header.frame_id, tf2::TimePointZero);
+                        const AZ::Quaternion rotation = ROS2::ROS2Conversions::FromROS2Quaternion(transformStamped.transform.rotation);
+                        const AZ::Vector3 translation = ROS2::ROS2Conversions::FromROS2Vector3(transformStamped.transform.translation);
+                        auto transform = AZ::Transform::CreateFromQuaternionAndTranslation(rotation, translation);
+
+                        m_goalPoseQueue.push({ transform.GetTranslation(), transform.GetRotation().GetEulerRadians() });
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    m_goalPoseQueue.push({ ROS2::ROS2Conversions::FromROS2Point(msg->pose.position),
+                                           ROS2::ROS2Conversions::FromROS2Quaternion(msg->pose.orientation).GetEulerRadians() });
+                }
+
             });
 
         NpcNavigatorComponent::Activate();
@@ -81,7 +111,10 @@ namespace ROS2::HumanWorker
         NpcNavigatorComponent::Deactivate();
 
         m_poseSubscription.reset();
+        m_tfBuffer.reset();
+        m_tfListener.reset();
     }
+
     AZStd::vector<NpcNavigatorComponent::GoalPose> NpcPoseNavigatorComponent::TryFindGoalPath()
     {
         if (m_goalPoseQueue.empty())

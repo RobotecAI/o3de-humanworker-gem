@@ -59,6 +59,9 @@ ly_add_target(
         Gem::EMotionFX.Static
 )
 
+target_depends_on_ros2_packages(${gem_name}.Private.Object geometry_msgs)
+target_depends_on_ros2_packages(${gem_name}.Private.Object tf2)
+
 # Here add ${gem_name} target, it depends on the Private Object library and Public API interface
 ly_add_target(
     NAME ${gem_name} ${PAL_TRAIT_MONOLITHIC_DRIVEN_MODULE_TYPE}
