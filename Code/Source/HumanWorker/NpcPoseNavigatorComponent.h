@@ -13,12 +13,15 @@
 #include <AzCore/Component/Component.h>
 #include <AzCore/Math/Transform.h>
 #include <AzCore/Math/Vector3.h>
+#include <AzCore/Time/ITime.h>
 #include <AzCore/std/containers/queue.h>
 #include <AzCore/std/parallel/mutex.h>
 #include <ROS2/Communication/TopicConfiguration.h>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <rclcpp/publisher.hpp>
 #include <rclcpp/subscription.hpp>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 namespace ROS2::HumanWorker
 {
@@ -48,5 +51,9 @@ namespace ROS2::HumanWorker
         bool m_useROS2PoseForWaypoint{ false };
         ROS2::TopicConfiguration m_poseTopicConfiguration;
         std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::PoseStamped>> m_poseSubscription = nullptr;
+
+        std::unique_ptr<tf2_ros::Buffer> m_tfBuffer = nullptr;
+        std::unique_ptr<tf2_ros::TransformListener> m_tfListener = nullptr;
+        AZStd::string m_worldFrame;
     };
 } // namespace ROS2::HumanWorker
