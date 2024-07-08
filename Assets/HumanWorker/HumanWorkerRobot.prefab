@@ -81,7 +81,7 @@
                             "TranslationOffset": [
                                 0.0,
                                 0.0,
-                                0.5
+                                1.0
                             ]
                         }
                     }
@@ -151,15 +151,13 @@
                     "Id": 18206091562556464943,
                     "Configuration": {
                         "entityId": "",
-                        "Gravity Enabled": false,
-                        "Lock Linear Z": true,
                         "Lock Angular X": true,
                         "Lock Angular Y": true,
                         "Mass": 359.9741516113281,
                         "Centre of mass offset": [
                             0.0,
                             0.0,
-                            0.5
+                            1.0
                         ],
                         "Inertia tensor": [
                             107.48095703125,
@@ -178,13 +176,10 @@
                     "$type": "EditorShapeColliderComponent",
                     "Id": 1657780093315026513,
                     "ColliderConfiguration": {
-                        "CollisionGroupId": {
-                            "GroupId": "{E68FAA37-AE19-4093-939A-A4B92759B4F6}"
-                        },
                         "Position": [
                             0.0,
                             0.0,
-                            0.5
+                            1.0
                         ],
                         "MaterialSlots": {
                             "Slots": [
@@ -192,10 +187,10 @@
                                     "Name": "Entire object",
                                     "MaterialAsset": {
                                         "assetId": {
-                                            "guid": "{B33C0402-063E-54B0-A6E6-0C3E3281C183}",
+                                            "guid": "{A7B4CB58-2B38-53A2-B901-AC92B41C1D43}",
                                             "subId": 1
                                         },
-                                        "assetHint": "collisions/collidermaterial.physicsmaterial"
+                                        "assetHint": "humanworker/collisions/collidermaterial.physicsmaterial"
                                     }
                                 }
                             ]
@@ -213,16 +208,16 @@
                     "$type": "EditorVisibilityComponent",
                     "Id": 8963879223403550331
                 },
-                "NpcNavigatorComponent": {
+                "NpcWaypointNavigatorComponent": {
                     "$type": "GenericComponentWrapper",
-                    "Id": 8214888317295398113,
+                    "Id": 3409862240064073382,
                     "m_template": {
-                        "$type": "NpcNavigatorComponent",
+                        "$type": "NpcWaypointNavigatorComponent",
                         "Detour Navigation Entity": "",
-                        "Topic Configuration": {
-                            "Topic": "cmd_vel"
-                        },
-                        "Angular Speed": 2.0
+                        "Waypoints": [
+                            "",
+                            ""
+                        ]
                     }
                 },
                 "ROS2RobotControlComponent": {
@@ -239,7 +234,8 @@
                     "$type": "GenericComponentWrapper",
                     "Id": 3585149160592881723,
                     "m_template": {
-                        "$type": "RigidBodyTwistControlComponent"
+                        "$type": "RigidBodyTwistControlComponent",
+                        "DisableLinearVelocityZOverriding": true
                     }
                 },
                 "TransformComponent": {

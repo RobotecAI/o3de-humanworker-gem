@@ -54,18 +54,6 @@
             "Id": "Entity_[9862683918956]",
             "Name": "EndPoint2",
             "Components": {
-                "EditorDebugDrawTextComponent": {
-                    "$type": "EditorDebugDrawTextComponent",
-                    "Id": 7276000702152342883,
-                    "Element": {
-                        "Text": "EndPoint2",
-                        "DrawMode": 1,
-                        "TargetEntity": ""
-                    },
-                    "Settings": {
-                        "VisibleInGame": false
-                    }
-                },
                 "EditorDisabledCompositionComponent": {
                     "$type": "EditorDisabledCompositionComponent",
                     "Id": 15851377247950876879
@@ -128,18 +116,6 @@
             "Id": "Entity_[9871273853548]",
             "Name": "EndPoint1",
             "Components": {
-                "EditorDebugDrawTextComponent": {
-                    "$type": "EditorDebugDrawTextComponent",
-                    "Id": 12282642636597983427,
-                    "Element": {
-                        "Text": "EndPoint1",
-                        "DrawMode": 1,
-                        "TargetEntity": ""
-                    },
-                    "Settings": {
-                        "VisibleInGame": false
-                    }
-                },
                 "EditorDisabledCompositionComponent": {
                     "$type": "EditorDisabledCompositionComponent",
                     "Id": 15851377247950876879
@@ -437,8 +413,7 @@
                             "Agent Radius": 0.4000000059604645,
                             "Detail Sample Distance": 1.0,
                             "Detail Sample Max Error": 0.10000000149011612,
-                            "Edge Max Error": 0.75,
-                            "Editor Preview": true
+                            "Edge Max Error": 0.75
                         }
                     }
                 },
@@ -545,19 +520,19 @@
                     "value": 0.0
                 },
                 {
-                    "op": "add",
-                    "path": "/Entities/Entity_[66011467218485]/Components/NpcNavigatorComponent/m_template/Waypoints/0",
-                    "value": "../Entity_[9871273853548]"
-                },
-                {
-                    "op": "add",
-                    "path": "/Entities/Entity_[66011467218485]/Components/NpcNavigatorComponent/m_template/Waypoints/1",
-                    "value": "../Entity_[9862683918956]"
+                    "op": "replace",
+                    "path": "/Entities/Entity_[66011467218485]/Components/NpcWaypointNavigatorComponent/m_template/Detour Navigation Entity",
+                    "value": "../Entity_[9879863788140]"
                 },
                 {
                     "op": "replace",
-                    "path": "/Entities/Entity_[66011467218485]/Components/NpcNavigatorComponent/m_template/Detour Navigation Entity",
-                    "value": "../Entity_[9879863788140]"
+                    "path": "/Entities/Entity_[66011467218485]/Components/NpcWaypointNavigatorComponent/m_template/Waypoints/0",
+                    "value": "../Entity_[9871273853548]"
+                },
+                {
+                    "op": "replace",
+                    "path": "/Entities/Entity_[66011467218485]/Components/NpcWaypointNavigatorComponent/m_template/Waypoints/1",
+                    "value": "../Entity_[9862683918956]"
                 }
             ]
         }
