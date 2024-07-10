@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+#include "AzCore/Serialization/EditContextConstants.inl"
 #include <HumanWorker/NavigationMeshOrchestratorComponent.h>
 
 #include <AzCore/Serialization/EditContext.h>
@@ -21,11 +22,12 @@ namespace ROS2::HumanWorker
             serialize->Class<NavigationMeshOrchestratorComponent, AZ::Component>()
                 ->Version(0)
                 ->Field("Asynchronous NavMesh Update", &NavigationMeshOrchestratorComponent::m_shouldUpdate)
-                ->Field("NavMesh Update Frequency", &NavigationMeshOrchestratorComponent::m_updateFrequency);
+                ->Field("NavMesh Update Frequency", &NavigationMeshOrchestratorComponent::m_updateFrequency)
+                ->Field("UseDelayedUpdate", &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive)
+                ->Field("DelayedUpdate", &NavigationMeshOrchestratorComponent::m_delayedTickUpdate);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
-                // clang-format off
                 editContext
                     ->Class<NavigationMeshOrchestratorComponent>("Navigation Orchestrator", "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
@@ -36,8 +38,11 @@ namespace ROS2::HumanWorker
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_updateFrequency, "NavMesh Update Frequency", "")
                         ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
-                        ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_shouldUpdate);
-                // clang-format on
+                        ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_shouldUpdate)
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive, "Use Delayed Update", "")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_delayedTickUpdate, "Ticks to update after", "")
+                        ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive);
             }
         }
     }
@@ -56,6 +61,16 @@ namespace ROS2::HumanWorker
 
     void NavigationMeshOrchestratorComponent::OnTick(float deltaTime, AZ::ScriptTimePoint time)
     {
+        if (m_delayedTickUpdateActive && m_delayedTickUpdate > 0)
+        {
+            m_delayedTickUpdate--;
+        }
+        else if (m_delayedTickUpdateActive && m_delayedTickUpdate == 0)
+        {
+            m_delayedTickUpdateActive = false;
+            UpdateNavigationMesh();
+        }
+
         if (m_initialUpdate)
         {
             UpdateNavigationMesh();
