@@ -20,10 +20,11 @@
     "icon_path": "preview.png",
     "requirements": "This gem requires ROS2, RecastNavigation, and PhysX gems.",
     "dependencies": [
-        "ROS2==3.1.0",
+        "ROS2>=3.1.0",
         "RecastNavigation",
         "PhysX5"
     ],
     "repo_uri": "https://github.com/RobotecAI/o3de-human-npc-gem",
     "restricted": "HumanWorker"
 }
+
