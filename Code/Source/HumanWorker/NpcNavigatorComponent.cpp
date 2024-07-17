@@ -9,11 +9,15 @@
 #include <HumanWorker/NpcNavigatorComponent.h>
 
 #include <AzCore/Component/Component.h>
+#include <AzCore/Component/EntityId.h>
+#include <AzCore/Component/TickBus.h>
 #include <AzCore/Component/TransformBus.h>
+#include <AzCore/EBus/Results.h>
 #include <AzCore/Math/Vector3.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>
+#include <LmbrCentral/Scripting/TagComponentBus.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
 #include <ROS2/ROS2GemUtilities.h>
@@ -73,15 +77,54 @@ namespace ROS2::HumanWorker
 
     void NpcNavigatorComponent::Activate()
     {
+        // Ensure that all required components are activated
+        AZ::SystemTickBus::QueueFunction(
+            [this]()
+            {
+                const AZ::EntityId currentId = GetEntityId();
+
+                // Find all entities that have the Detour Navigation Component and are tagged with the same tag as this entity
+                LmbrCentral::Tags tags;
+                LmbrCentral::TagComponentRequestBus::EventResult(
+                    tags, GetEntityId(), &LmbrCentral::TagComponentRequestBus::Events::GetTags);
+                for (const auto& tag : tags)
+                {
+                    bool foundEntity = false;
+                    AZ::EBusAggregateResults<AZ::EntityId> tagSearchResults;
+                    LmbrCentral::TagGlobalRequestBus::EventResult(
+                        tagSearchResults, tag, &LmbrCentral::TagGlobalRequestBus::Events::RequestTaggedEntities);
+
+                    if (!tagSearchResults.values.empty())
+                    {
+                        for (const auto& entityId : tagSearchResults.values)
+                        {
+                            // Only a valid entity with a DetourNavigationRequestBus handler can be used
+                            if (entityId.IsValid() && entityId != currentId &&
+                                RecastNavigation::DetourNavigationRequestBus::HasHandlers(entityId))
+                            {
+                                m_navigationEntity = entityId;
+                                foundEntity = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (foundEntity)
+                    {
+                        break;
+                    }
+                }
+
+                RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(GetNavigationMeshEntityId(m_navigationEntity));
+                if (m_debugMode)
+                {
+                    AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(m_entity->GetId());
+                }
+            });
+
         m_publisher =
             CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_twistTopicConfiguration);
 
         AZ::TickBus::Handler::BusConnect();
-        RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(GetNavigationMeshEntityId(m_navigationEntity));
-        if (m_debugMode)
-        {
-            AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(m_entity->GetId());
-        }
 
         m_startPosition = GetCurrentTransform().GetTranslation();
     }
