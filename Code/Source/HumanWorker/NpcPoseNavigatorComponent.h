@@ -48,7 +48,7 @@ namespace ROS2::HumanWorker
         AZStd::queue<GoalPose> m_goalPoseQueue;
         AZStd::mutex m_goalPoseQueueMutex;
 
-        bool m_useROS2PoseForWaypoint{ false };
+        bool m_rotateToPoseHeading = true;
         ROS2::TopicConfiguration m_poseTopicConfiguration;
         std::shared_ptr<rclcpp::Subscription<geometry_msgs::msg::PoseStamped>> m_poseSubscription = nullptr;
 

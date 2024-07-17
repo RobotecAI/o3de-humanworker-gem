@@ -39,7 +39,8 @@ namespace ROS2::HumanWorker
             serialize->Class<NpcPoseNavigatorComponent, NpcNavigatorComponent>()
                 ->Version(1)
                 ->Field("Pose Topic Configuration", &NpcPoseNavigatorComponent::m_poseTopicConfiguration)
-                ->Field("World Frame", &NpcPoseNavigatorComponent::m_worldFrame);
+                ->Field("World Frame", &NpcPoseNavigatorComponent::m_worldFrame)
+                ->Field("Rotate To Pose Heading", &NpcPoseNavigatorComponent::m_rotateToPoseHeading);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
@@ -54,7 +55,12 @@ namespace ROS2::HumanWorker
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_poseTopicConfiguration, "Topic Configuration", "")
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Pose waypoints topic")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_worldFrame, "World Frame", "");
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_worldFrame, "World Frame", "")
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default,
+                        &NpcPoseNavigatorComponent::m_rotateToPoseHeading,
+                        "Rotate To Pose Heading",
+                        "Rotate the npc to the pose heading on the final pose.");
             }
         }
     }
@@ -164,6 +170,13 @@ namespace ROS2::HumanWorker
             {
                 AZ_Assert(
                     m_goalIndex == m_goalPath.size(), "The Npc Navigator component is in an invalid state due to programmer's error.");
+
+                if (!m_rotateToPoseHeading)
+                {
+                    m_state = NavigationState::Idle;
+                    return {};
+                }
+
                 const float BearingError = GetSignedAngleBetweenUnitVectors(
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);

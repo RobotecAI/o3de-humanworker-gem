@@ -109,6 +109,8 @@ namespace ROS2::HumanWorker
         // EntityDebugDisplayEventBus overrides
         void DisplayEntityViewport(const AzFramework::ViewportInfo& viewportInfo, AzFramework::DebugDisplayRequests& debugDisplay) override;
 
+        bool UseExplicitlyDefinedNavigationMesh() const;
+
         NavigationState m_state{ NavigationState::Navigate };
         AZ::EntityId m_navigationEntity;
 
@@ -124,6 +126,8 @@ namespace ROS2::HumanWorker
         float m_acceptableDistanceError{ 0.5f };
         float m_acceptableAngleError{ 0.1f };
         bool m_debugMode{ false };
+
+        bool m_useTagsForNavigationMesh{ false };
 
         // ROS2 communication variables
         TopicConfiguration m_twistTopicConfiguration;
