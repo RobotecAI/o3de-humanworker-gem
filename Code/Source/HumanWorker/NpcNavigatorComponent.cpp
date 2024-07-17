@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
+#include "AzCore/RTTI/ReflectContext.h"
+#include "AzCore/Serialization/EditContextConstants.inl"
 #include <HumanWorker/NpcNavigatorComponent.h>
 
 #include <AzCore/Component/Component.h>
@@ -46,7 +48,8 @@ namespace ROS2::HumanWorker
                 ->Field("Angular Speed", &NpcNavigatorComponent::m_angularSpeed)
                 ->Field("Cross Track Factor", &NpcNavigatorComponent::m_crossTrackFactor)
                 ->Field("Acceptable Distance Error", &NpcNavigatorComponent::m_acceptableDistanceError)
-                ->Field("Acceptable Angle Error", &NpcNavigatorComponent::m_acceptableAngleError);
+                ->Field("Acceptable Angle Error", &NpcNavigatorComponent::m_acceptableAngleError)
+                ->Field("UseTag", &NpcNavigatorComponent::m_useTagsForNavigationMesh);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
@@ -58,9 +61,16 @@ namespace ROS2::HumanWorker
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_debugMode, "Debug Mode", "")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
+                        &NpcNavigatorComponent::m_useTagsForNavigationMesh,
+                        "Use tag for navigation mesh",
+                        "If true, the navigation mesh entity is found by tag, otherwise it is explicitly defined by Entity Id.")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default,
                         &NpcNavigatorComponent::m_navigationEntity,
                         "Detour Navigation Entity",
                         "Entity with the Detour Navigation Component")
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &NpcNavigatorComponent::UseExplicitlyDefinedNavigationMesh)
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &NpcNavigatorComponent::m_twistTopicConfiguration, "Topic Configuration", "")
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Twist control topic")
@@ -81,36 +91,39 @@ namespace ROS2::HumanWorker
         AZ::SystemTickBus::QueueFunction(
             [this]()
             {
-                const AZ::EntityId currentId = GetEntityId();
-
-                // Find all entities that have the Detour Navigation Component and are tagged with the same tag as this entity
-                LmbrCentral::Tags tags;
-                LmbrCentral::TagComponentRequestBus::EventResult(
-                    tags, GetEntityId(), &LmbrCentral::TagComponentRequestBus::Events::GetTags);
-                for (const auto& tag : tags)
+                if (m_useTagsForNavigationMesh)
                 {
-                    bool foundEntity = false;
-                    AZ::EBusAggregateResults<AZ::EntityId> tagSearchResults;
-                    LmbrCentral::TagGlobalRequestBus::EventResult(
-                        tagSearchResults, tag, &LmbrCentral::TagGlobalRequestBus::Events::RequestTaggedEntities);
+                    const AZ::EntityId currentId = GetEntityId();
 
-                    if (!tagSearchResults.values.empty())
+                    // Find all entities that have the Detour Navigation Component and are tagged with the same tag as this entity
+                    LmbrCentral::Tags tags;
+                    LmbrCentral::TagComponentRequestBus::EventResult(
+                        tags, GetEntityId(), &LmbrCentral::TagComponentRequestBus::Events::GetTags);
+                    for (const auto& tag : tags)
                     {
-                        for (const auto& entityId : tagSearchResults.values)
+                        bool foundEntity = false;
+                        AZ::EBusAggregateResults<AZ::EntityId> tagSearchResults;
+                        LmbrCentral::TagGlobalRequestBus::EventResult(
+                            tagSearchResults, tag, &LmbrCentral::TagGlobalRequestBus::Events::RequestTaggedEntities);
+
+                        if (!tagSearchResults.values.empty())
                         {
-                            // Only a valid entity with a DetourNavigationRequestBus handler can be used
-                            if (entityId.IsValid() && entityId != currentId &&
-                                RecastNavigation::DetourNavigationRequestBus::HasHandlers(entityId))
+                            for (const auto& entityId : tagSearchResults.values)
                             {
-                                m_navigationEntity = entityId;
-                                foundEntity = true;
-                                break;
+                                // Only a valid entity with a DetourNavigationRequestBus handler can be used
+                                if (entityId.IsValid() && entityId != currentId &&
+                                    RecastNavigation::DetourNavigationRequestBus::HasHandlers(entityId))
+                                {
+                                    m_navigationEntity = entityId;
+                                    foundEntity = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (foundEntity)
-                    {
-                        break;
+                        if (foundEntity)
+                        {
+                            break;
+                        }
                     }
                 }
 
@@ -292,5 +305,10 @@ namespace ROS2::HumanWorker
         cmdVelMessage.angular.z = speed.m_angular;
 
         m_publisher->publish(cmdVelMessage);
+    }
+
+    bool NpcNavigatorComponent::UseExplicitlyDefinedNavigationMesh() const
+    {
+        return !m_useTagsForNavigationMesh;
     }
 } // namespace ROS2::HumanWorker
