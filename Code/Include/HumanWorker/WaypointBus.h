@@ -29,19 +29,14 @@ namespace ROS2::HumanWorker
 
                 if (AZ::EditContext* editContext = serializeContext->GetEditContext())
                 {
-                    // clang-format off
-                editContext->Class<WaypointConfiguration>("Waypoint Configuration", "Waypoint Configuration")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default,
-                        &WaypointConfiguration::m_orientationCaptured,
-                        "Orientation captured",
-                        "Should the waypoint orientation be captured?")
-                    ->DataElement(
-                        AZ::Edit::UIHandlers::Default,
-                        &WaypointConfiguration::m_idleTime,
-                        "Idle time",
-                        "Time spent at waypoint.");
-                    // clang-format on
+                    editContext->Class<WaypointConfiguration>("Waypoint Configuration", "Waypoint Configuration")
+                        ->DataElement(
+                            AZ::Edit::UIHandlers::Default,
+                            &WaypointConfiguration::m_orientationCaptured,
+                            "Orientation captured",
+                            "Should the waypoint orientation be captured?")
+                        ->DataElement(
+                            AZ::Edit::UIHandlers::Default, &WaypointConfiguration::m_idleTime, "Idle time", "Time spent at waypoint.");
                 }
             }
         }
