@@ -6,8 +6,6 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#include "AzCore/RTTI/ReflectContext.h"
-#include "AzCore/Serialization/EditContextConstants.inl"
 #include <HumanWorker/NpcNavigatorComponent.h>
 
 #include <AzCore/Component/Component.h>
@@ -16,6 +14,7 @@
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/EBus/Results.h>
 #include <AzCore/Math/Vector3.h>
+#include <AzCore/RTTI/ReflectContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>

@@ -92,7 +92,7 @@ namespace ROS2::HumanWorker
         static NpcNavigatorComponent::Speed CalculateSpeedForGoal(
             const AZ::Transform& currentTransform, GoalPose goal, AZ::Vector3 startPosition, Speed maxSpeed, float crossTrackFactor);
         [[nodiscard]] AZStd::vector<NpcNavigatorComponent::GoalPose> ConstructGoalPath(
-            const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion waypointOrientation) const;
+            const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion& waypointOrientation) const;
         AZStd::vector<AZ::Vector3> FindPathBetweenPositions(AZ::Vector3 currentPosition, AZ::Vector3 goalPosition);
 
         // Virtual functions to be implemented by derived classes with different waypoint definitions

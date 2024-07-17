@@ -54,6 +54,5 @@ namespace ROS2::HumanWorker
 
         std::unique_ptr<tf2_ros::Buffer> m_tfBuffer = nullptr;
         std::unique_ptr<tf2_ros::TransformListener> m_tfListener = nullptr;
-        AZStd::string m_worldFrame;
     };
 } // namespace ROS2::HumanWorker

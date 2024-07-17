@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: Apache-2.0 OR MIT
  *
  */
-#include "AzCore/Serialization/EditContextConstants.inl"
 #include <HumanWorker/NavigationMeshOrchestratorComponent.h>
 
 #include <AzCore/Serialization/EditContext.h>
@@ -61,14 +60,17 @@ namespace ROS2::HumanWorker
 
     void NavigationMeshOrchestratorComponent::OnTick(float deltaTime, AZ::ScriptTimePoint time)
     {
-        if (m_delayedTickUpdateActive && m_delayedTickUpdate > 0)
+        if (m_delayedTickUpdateActive)
         {
-            m_delayedTickUpdate--;
-        }
-        else if (m_delayedTickUpdateActive && m_delayedTickUpdate == 0)
-        {
-            m_delayedTickUpdateActive = false;
-            UpdateNavigationMesh();
+            if (m_delayedTickUpdate > 0)
+            {
+                m_delayedTickUpdate--;
+            }
+            else
+            {
+                m_delayedTickUpdateActive = false;
+                UpdateNavigationMesh();
+            }
         }
 
         if (m_initialUpdate)

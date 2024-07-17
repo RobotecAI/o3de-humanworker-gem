@@ -39,7 +39,6 @@ namespace ROS2::HumanWorker
             serialize->Class<NpcPoseNavigatorComponent, NpcNavigatorComponent>()
                 ->Version(1)
                 ->Field("Pose Topic Configuration", &NpcPoseNavigatorComponent::m_poseTopicConfiguration)
-                ->Field("World Frame", &NpcPoseNavigatorComponent::m_worldFrame)
                 ->Field("Rotate To Pose Heading", &NpcPoseNavigatorComponent::m_rotateToPoseHeading);
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
@@ -55,7 +54,6 @@ namespace ROS2::HumanWorker
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_poseTopicConfiguration, "Topic Configuration", "")
                     ->Attribute(AZ::Edit::Attributes::NameLabelOverride, "Pose waypoints topic")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NpcPoseNavigatorComponent::m_worldFrame, "World Frame", "")
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
                         &NpcPoseNavigatorComponent::m_rotateToPoseHeading,
@@ -68,33 +66,35 @@ namespace ROS2::HumanWorker
     void NpcPoseNavigatorComponent::Activate()
     {
         auto ros2Node = ROS2::ROS2Interface::Get()->GetNode();
-        const auto* ros2_frame_component = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
-        auto namespaced_topic_name =
-            ROS2::ROS2Names::GetNamespacedName(ros2_frame_component->GetNamespace(), m_poseTopicConfiguration.m_topic);
+        const auto* ros2FrameComponent = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
+        auto namespacedTopicName = ROS2::ROS2Names::GetNamespacedName(ros2FrameComponent->GetNamespace(), m_poseTopicConfiguration.m_topic);
+
+        AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(ros2Node->get_clock());
         m_tfListener = std::make_unique<tf2_ros::TransformListener>(*m_tfBuffer);
 
         m_poseSubscription = ros2Node->create_subscription<geometry_msgs::msg::PoseStamped>(
-            namespaced_topic_name.data(),
+            namespacedTopicName.data(),
             m_poseTopicConfiguration.GetQoS(),
-            [this](const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+            [this, odomFrame](const geometry_msgs::msg::PoseStamped::SharedPtr msg)
             {
                 AZStd::lock_guard<AZStd::mutex> lock(m_goalPoseQueueMutex);
                 geometry_msgs::msg::PoseStamped::SharedPtr goalPoseMsg;
-                // m_tfBuffer->transform(*msg, *goalPoseMsg, m_worldFrame.c_str());
 
                 geometry_msgs::msg::TransformStamped transformStamped;
                 if (msg->header.frame_id != "")
                 {
-                    if (m_tfBuffer->canTransform(m_worldFrame.c_str(), msg->header.frame_id, tf2::TimePointZero))
+                    if (m_tfBuffer->canTransform(odomFrame.c_str(), msg->header.frame_id, tf2::TimePointZero))
                     {
-                        transformStamped = m_tfBuffer->lookupTransform(m_worldFrame.c_str(), msg->header.frame_id, tf2::TimePointZero);
-                        const AZ::Quaternion rotation = ROS2::ROS2Conversions::FromROS2Quaternion(transformStamped.transform.rotation);
-                        const AZ::Vector3 translation = ROS2::ROS2Conversions::FromROS2Vector3(transformStamped.transform.translation);
-                        auto transform = AZ::Transform::CreateFromQuaternionAndTranslation(rotation, translation);
+                        transformStamped = m_tfBuffer->lookupTransform(odomFrame.c_str(), msg->header.frame_id, tf2::TimePointZero);
+                        AZ::Quaternion rotation = ROS2::ROS2Conversions::FromROS2Quaternion(transformStamped.transform.rotation);
+                        AZ::Vector3 translation = ROS2::ROS2Conversions::FromROS2Vector3(transformStamped.transform.translation);
 
-                        m_goalPoseQueue.push({ transform.GetTranslation(), transform.GetRotation().GetEulerRadians() });
+                        translation += ROS2::ROS2Conversions::FromROS2Point(msg->pose.position);
+                        rotation *= ROS2::ROS2Conversions::FromROS2Quaternion(msg->pose.orientation);
+
+                        m_goalPoseQueue.push({ translation, rotation.GetEulerRadians() });
                     }
                     else
                     {
@@ -106,7 +106,6 @@ namespace ROS2::HumanWorker
                     m_goalPoseQueue.push({ ROS2::ROS2Conversions::FromROS2Point(msg->pose.position),
                                            ROS2::ROS2Conversions::FromROS2Quaternion(msg->pose.orientation).GetEulerRadians() });
                 }
-
             });
 
         NpcNavigatorComponent::Activate();
