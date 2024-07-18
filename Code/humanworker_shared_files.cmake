@@ -5,5 +5,6 @@
 set(FILES
     Include/HumanWorker/NpcNavigatorBus.h
     Include/HumanWorker/WaypointBus.h
+    Include/HumanWorker/WaypointBus.h
     Source/HumanWorkerModule.cpp
 )
