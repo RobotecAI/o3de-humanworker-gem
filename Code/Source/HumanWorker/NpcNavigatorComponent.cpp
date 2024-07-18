@@ -93,8 +93,8 @@ namespace ROS2::HumanWorker
 
     bool NpcNavigatorComponent::IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError)
     {
-        AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY()};
-        AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY()};
+        AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY() };
+        AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY() };
         return vector21.GetDistance(vector22) < acceptableDistanceError;
     }
 
@@ -196,18 +196,14 @@ namespace ROS2::HumanWorker
         RecalculateCurrentGoalPath();
     }
 
-    void NpcNavigatorComponent::ClearWaypoints()
+    void NpcNavigatorComponent::SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds)
     {
         m_goalIndex = 0;
         m_goalPath.clear();
         m_state = NavigationState::Navigate;
         m_waypointIndex = 0;
         m_waypointEntities.clear();
-    }
-
-    void NpcNavigatorComponent::AddWaypoint(AZ::EntityId waypointEntityId)
-    {
-        m_waypointEntities.push_back(waypointEntityId);
+        m_waypointEntities = waypointEntityIds;
     }
 
     AZ::Transform NpcNavigatorComponent::GetCurrentTransform() const
@@ -231,11 +227,11 @@ namespace ROS2::HumanWorker
         }
 
         m_waypointConfiguration = FetchWaypointConfiguration(WaypointEntity);
-        return ConstructGoalPath(PositionPath);
+        return ConstructGoalPath(PositionPath, GetEntityTransform(WaypointEntity).GetRotation());
     }
 
     AZStd::vector<NpcNavigatorComponent::GoalPose> NpcNavigatorComponent::ConstructGoalPath(
-        const AZStd::vector<AZ::Vector3>& positionPath) const
+        const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion& waypointOrientation) const
     {
         AZStd::vector<GoalPose> goalPath;
         for (size_t i = 0; i < positionPath.size(); ++i)
@@ -248,6 +244,10 @@ namespace ROS2::HumanWorker
             if (nextIt != positionPath.end())
             {
                 direction = (*nextIt - *it).GetNormalized();
+            }
+            else
+            {
+                direction = waypointOrientation.TransformVector(AZ::Vector3::CreateAxisX());
             }
             goalPath.push_back({ .m_position = positionPath[i], .m_direction = direction });
         }
@@ -303,9 +303,11 @@ namespace ROS2::HumanWorker
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);
 
-                if (std::abs(BearingError) < m_acceptableAngleError)
+                if (AZStd::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
+                    NpcNavigatorNotificationBus::Event(
+                        GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
                     return {};
                 }
                 else
@@ -321,7 +323,16 @@ namespace ROS2::HumanWorker
             {
                 if (++m_goalIndex == m_goalPath.size())
                 {
-                    m_state = m_waypointConfiguration.m_orientationCaptured ? NavigationState::Rotate : NavigationState::Idle;
+                    if (m_waypointConfiguration.m_orientationCaptured)
+                    {
+                        m_state = NavigationState::Rotate;
+                    }
+                    else
+                    {
+                        m_state = NavigationState::Idle;
+                        NpcNavigatorNotificationBus::Event(
+                            GetEntityId(), &HumanWorker::NpcNavigatorNotifications::OnWaypointReached, m_waypointConfiguration);
+                    }
                     return {};
                 }
             }

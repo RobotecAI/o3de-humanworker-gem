@@ -8,13 +8,14 @@
  */
 #pragma once
 
+#include <AzCore/Component/Component.h>
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/EBus/EBus.h>
+#include <AzCore/Serialization/EditContext.h>
+#include <HumanWorker/WaypointConfiguration.h>
 
 namespace ROS2::HumanWorker
 {
-    struct WaypointConfiguration;
-
     class WaypointRequests
     {
     public:
