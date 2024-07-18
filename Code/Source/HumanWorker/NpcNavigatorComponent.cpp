@@ -231,7 +231,7 @@ namespace ROS2::HumanWorker
     }
 
     AZStd::vector<NpcNavigatorComponent::GoalPose> NpcNavigatorComponent::ConstructGoalPath(
-        const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion waypointOrientation) const
+        const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion& waypointOrientation) const
     {
         AZStd::vector<GoalPose> goalPath;
         for (size_t i = 0; i < positionPath.size(); ++i)
@@ -303,7 +303,7 @@ namespace ROS2::HumanWorker
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);
 
-                if (std::abs(BearingError) < m_acceptableAngleError)
+                if (AZStd::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
                     NpcNavigatorNotificationBus::Event(

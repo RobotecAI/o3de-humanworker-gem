@@ -21,6 +21,8 @@ namespace ROS2::HumanWorker
         AZ_RTTI(NpcNavigatorRequests, "{31d0a864-9d15-4ad7-a597-a4573937957d}");
         virtual ~NpcNavigatorRequests() = default;
 
+        //! Selects a path for the npc to navigate.
+        //! @param waypointEntityIds The entity ids of the waypoints that make up the path.
         virtual void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) = 0;
     };
 
@@ -48,6 +50,8 @@ namespace ROS2::HumanWorker
         using BusIdType = AZ::EntityId;
         //////////////////////////////////////////////////////////////////////////
 
+        //! Notification that the npc has reached a waypoint.
+        //! @param waypointConfig The configuration of the waypoint that was reached.
         virtual void OnWaypointReached([[maybe_unused]] WaypointConfiguration waypointConfig) {}
     };
 

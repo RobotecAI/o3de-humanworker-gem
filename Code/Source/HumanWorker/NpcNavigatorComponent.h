@@ -101,7 +101,7 @@ namespace ROS2::HumanWorker
 
         AZStd::vector<GoalPose> TryFindGoalPath();
         [[nodiscard]] AZStd::vector<NpcNavigatorComponent::GoalPose> ConstructGoalPath(
-            const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion waypointOrientation) const;
+            const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion& waypointOrientation) const;
         AZStd::vector<AZ::Vector3> FindPathBetweenPositions(AZ::Vector3 currentPosition, AZ::Vector3 goalPosition);
         NpcNavigatorComponent::Speed CalculateSpeed(float deltaTime);
 
