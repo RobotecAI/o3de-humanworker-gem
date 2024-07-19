@@ -6,14 +6,14 @@
  *
  */
 #include "HumanWorkerModuleInterface.h"
-#include "HumanWorker/NpcPoseNavigatorComponent.h"
-#include "HumanWorker/NpcWaypointNavigatorComponent.h"
 
 #include <AzCore/Memory/Memory.h>
 
 #include <HumanWorker/AnimGraphInputProviderComponent.h>
 #include <HumanWorker/NavigationMeshOrchestratorComponent.h>
 #include <HumanWorker/NpcNavigatorComponent.h>
+#include <HumanWorker/NpcPoseNavigatorComponent.h>
+#include <HumanWorker/NpcWaypointNavigatorComponent.h>
 #include <HumanWorker/WaypointComponent.h>
 #include <HumanWorker/WaypointSelectorComponent.h>
 

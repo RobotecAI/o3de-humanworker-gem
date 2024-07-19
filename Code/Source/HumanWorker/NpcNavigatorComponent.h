@@ -40,10 +40,7 @@ namespace ROS2::HumanWorker
         ~NpcNavigatorComponent() override = default;
 
         static void Reflect(AZ::ReflectContext* context);
-        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
-        {
-            required.push_back(AZ_CRC_CE("ROS2Frame"));
-        }
+        static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
 
         // AZ::Component overrides
         void Activate() override;
@@ -71,13 +68,13 @@ namespace ROS2::HumanWorker
             AZ::Vector3 m_direction{};
         };
 
-        // Utility functions
+        // Helper functions for navigation and component setup.
         // Assumes that the argument vectors lie in the XY plane.
-        static float GetSignedAngleBetweenUnitVectors(AZ::Vector3 unitVector1, AZ::Vector3 unitVector2);
-        static AZ::Transform GetEntityTransform(AZ::EntityId entityId);
+        static float GetSignedAngleBetweenUnitVectors(const AZ::Vector3& unitVector1, const AZ::Vector3& unitVector2);
+        static AZ::Transform GetEntityTransform(const AZ::EntityId& entityId);
         static NpcNavigatorComponent::PublisherPtr CreatePublisher(
             ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration);
-        static bool IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError);
+        static bool IsClose(const AZ::Vector3& vector1, const AZ::Vector3& vector2, float acceptableDistanceError);
         [[nodiscard]] AZ::Transform GetCurrentTransform() const;
 
         // Navigation mesh
@@ -89,15 +86,30 @@ namespace ROS2::HumanWorker
         }
 
         // Path calculations and navigation
-        static NpcNavigatorComponent::Speed CalculateSpeedForGoal(
-            const AZ::Transform& currentTransform, GoalPose goal, AZ::Vector3 startPosition, Speed maxSpeed, float crossTrackFactor);
-        [[nodiscard]] AZStd::vector<NpcNavigatorComponent::GoalPose> ConstructGoalPath(
+        static Speed CalculateSpeedForGoal(
+            const AZ::Transform& currentTransform,
+            const GoalPose& goal,
+            const AZ::Vector3& startPosition,
+            const Speed& maxSpeed,
+            float crossTrackFactor);
+        [[nodiscard]] AZStd::vector<GoalPose> ConstructGoalPath(
             const AZStd::vector<AZ::Vector3>& positionPath, const AZ::Quaternion& waypointOrientation) const;
-        AZStd::vector<AZ::Vector3> FindPathBetweenPositions(AZ::Vector3 currentPosition, AZ::Vector3 goalPosition);
+        AZStd::vector<AZ::Vector3> FindPathBetweenPositions(const AZ::Vector3& currentPosition, const AZ::Vector3& goalPosition);
 
         // Virtual functions to be implemented by derived classes with different waypoint definitions
+        //! Try to find a path to the next goal.
+        //! If no path can be found or the goal is unreachable, return an empty vector.
+        //! Otherwise, return a vector of goal poses that the NPC should follow.
         virtual AZStd::vector<GoalPose> TryFindGoalPath() = 0;
+
+        //! Calculate the speed of the NPC based on the current state.
+        //! The speed is calculated based on the current goal and the current position of the NPC.
+        //! @param deltaTime The time since the last calculation.
         virtual NpcNavigatorComponent::Speed CalculateSpeed(float deltaTime) = 0;
+
+        //! Recalculate the current goal path.
+        //! This function should be called when a new path needs to be calculated.
+        //! It should reset the current state and create a new goal path.
         virtual void RecalculateCurrentGoalPath() = 0;
 
         // ROS2 communication
