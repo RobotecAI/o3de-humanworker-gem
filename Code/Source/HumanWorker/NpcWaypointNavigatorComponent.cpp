@@ -128,7 +128,8 @@ namespace ROS2::HumanWorker
         case NavigationState::Navigate:
             if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation(), m_acceptableDistanceError))
             {
-                if ((m_goalIndex + 1) == m_goalPath.size())
+                m_goalIndex++;
+                if (m_goalIndex == m_goalPath.size())
                 {
                     if (m_waypointConfiguration.m_orientationCaptured)
                     {
@@ -142,8 +143,7 @@ namespace ROS2::HumanWorker
                     }
                     return {};
                 }
-                m_startPosition = m_goalPath[m_goalIndex].m_position;
-                m_goalIndex++;
+                m_startPosition = m_goalPath[m_goalIndex - 1].m_position;
             }
 
             return CalculateSpeedForGoal(

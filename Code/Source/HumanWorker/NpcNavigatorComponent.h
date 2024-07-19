@@ -86,7 +86,7 @@ namespace ROS2::HumanWorker
         }
 
         // Path calculations and navigation
-        static Speed CalculateSpeedForGoal(
+        Speed CalculateSpeedForGoal(
             const AZ::Transform& currentTransform,
             const GoalPose& goal,
             const AZ::Vector3& startPosition,
@@ -140,6 +140,8 @@ namespace ROS2::HumanWorker
         bool m_debugMode{ false };
 
         bool m_useTagsForNavigationMesh{ false };
+
+        bool m_preventWalkingInCircle{ false };
 
         // ROS2 communication variables
         TopicConfiguration m_twistTopicConfiguration;
