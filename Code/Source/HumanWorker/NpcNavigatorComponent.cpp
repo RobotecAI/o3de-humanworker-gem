@@ -84,6 +84,11 @@ namespace ROS2::HumanWorker
         }
     }
 
+    void NpcNavigatorComponent::GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required)
+    {
+        required.push_back(AZ_CRC_CE("ROS2Frame"));
+    }
+
     void NpcNavigatorComponent::Activate()
     {
         // Ensure that all required components are activated
@@ -94,7 +99,8 @@ namespace ROS2::HumanWorker
                 {
                     const AZ::EntityId currentId = GetEntityId();
 
-                    // Find all entities that have the Detour Navigation Component and are tagged with the same tag as this entity
+                    // Find an entities that have the Detour Navigation Component and are tagged with the same tag as this entity
+                    // If multiple entities are found, the first one is used
                     LmbrCentral::Tags tags;
                     LmbrCentral::TagComponentRequestBus::EventResult(
                         tags, GetEntityId(), &LmbrCentral::TagComponentRequestBus::Events::GetTags);
@@ -105,20 +111,18 @@ namespace ROS2::HumanWorker
                         LmbrCentral::TagGlobalRequestBus::EventResult(
                             tagSearchResults, tag, &LmbrCentral::TagGlobalRequestBus::Events::RequestTaggedEntities);
 
-                        if (!tagSearchResults.values.empty())
+                        for (const auto& entityId : tagSearchResults.values)
                         {
-                            for (const auto& entityId : tagSearchResults.values)
+                            // Only a valid entity with a DetourNavigationRequestBus handler can be used
+                            if (entityId.IsValid() && entityId != currentId &&
+                                RecastNavigation::DetourNavigationRequestBus::HasHandlers(entityId))
                             {
-                                // Only a valid entity with a DetourNavigationRequestBus handler can be used
-                                if (entityId.IsValid() && entityId != currentId &&
-                                    RecastNavigation::DetourNavigationRequestBus::HasHandlers(entityId))
-                                {
-                                    m_navigationEntity = entityId;
-                                    foundEntity = true;
-                                    break;
-                                }
+                                m_navigationEntity = entityId;
+                                foundEntity = true;
+                                break;
                             }
                         }
+
                         if (foundEntity)
                         {
                             break;
@@ -151,21 +155,21 @@ namespace ROS2::HumanWorker
         AZ::TickBus::Handler::BusDisconnect();
     }
 
-    bool NpcNavigatorComponent::IsClose(AZ::Vector3 vector1, AZ::Vector3 vector2, float acceptableDistanceError)
+    bool NpcNavigatorComponent::IsClose(const AZ::Vector3& vector1, const AZ::Vector3& vector2, float acceptableDistanceError)
     {
         AZ::Vector2 vector21{ vector1.GetX(), vector1.GetY() };
         AZ::Vector2 vector22{ vector2.GetX(), vector2.GetY() };
         return vector21.GetDistance(vector22) < acceptableDistanceError;
     }
 
-    AZ::Transform NpcNavigatorComponent::GetEntityTransform(AZ::EntityId entityId)
+    AZ::Transform NpcNavigatorComponent::GetEntityTransform(const AZ::EntityId& entityId)
     {
         AZ::Transform currentTransform{ AZ::Transform::CreateIdentity() };
         AZ::TransformBus::EventResult(currentTransform, entityId, &AZ::TransformBus::Events::GetWorldTM);
         return currentTransform;
     }
 
-    float NpcNavigatorComponent::GetSignedAngleBetweenUnitVectors(AZ::Vector3 unitVector1, AZ::Vector3 unitVector2)
+    float NpcNavigatorComponent::GetSignedAngleBetweenUnitVectors(const AZ::Vector3& unitVector1, const AZ::Vector3& unitVector2)
     {
         return AZ::Atan2(unitVector1.Cross(unitVector2).Dot(AZ::Vector3::CreateAxisZ()), unitVector1.Dot(unitVector2));
     }
@@ -179,7 +183,11 @@ namespace ROS2::HumanWorker
     }
 
     NpcNavigatorComponent::Speed NpcNavigatorComponent::CalculateSpeedForGoal(
-        const AZ::Transform& currentTransform, GoalPose goal, AZ::Vector3 startPosition, Speed maxSpeed, float crossTrackFactor)
+        const AZ::Transform& currentTransform,
+        const GoalPose& goal,
+        const AZ::Vector3& startPosition,
+        const Speed& maxSpeed,
+        float crossTrackFactor)
     {
         const AZ::Vector3 RobotPosition = currentTransform.GetTranslation();
         const AZ::Vector3 RobotDirection = currentTransform.GetBasisX().GetNormalized();
@@ -282,7 +290,8 @@ namespace ROS2::HumanWorker
         return goalPath;
     }
 
-    AZStd::vector<AZ::Vector3> NpcNavigatorComponent::FindPathBetweenPositions(AZ::Vector3 currentPosition, AZ::Vector3 goalPosition)
+    AZStd::vector<AZ::Vector3> NpcNavigatorComponent::FindPathBetweenPositions(
+        const AZ::Vector3& currentPosition, const AZ::Vector3& goalPosition)
     {
         if (!GetNavigationMeshEntityId(m_navigationEntity).IsValid())
         {

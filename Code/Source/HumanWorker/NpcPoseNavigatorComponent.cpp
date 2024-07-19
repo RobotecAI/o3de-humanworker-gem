@@ -37,7 +37,7 @@ namespace ROS2::HumanWorker
         if (auto* serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serialize->Class<NpcPoseNavigatorComponent, NpcNavigatorComponent>()
-                ->Version(1)
+                ->Version(0)
                 ->Field("Pose Topic Configuration", &NpcPoseNavigatorComponent::m_poseTopicConfiguration)
                 ->Field("Rotate To Pose Heading", &NpcPoseNavigatorComponent::m_rotateToPoseHeading);
 
@@ -66,10 +66,16 @@ namespace ROS2::HumanWorker
     void NpcPoseNavigatorComponent::Activate()
     {
         auto ros2Node = ROS2::ROS2Interface::Get()->GetNode();
+        if (!ros2Node)
+        {
+            AZ_Error("NpcPoseNavigatorComponent", false, "Failed to get ROS2 node.");
+            return;
+        }
+
         const auto* ros2FrameComponent = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
         auto namespacedTopicName = ROS2::ROS2Names::GetNamespacedName(ros2FrameComponent->GetNamespace(), m_poseTopicConfiguration.m_topic);
 
-        AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
+        const AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(ros2Node->get_clock());
         m_tfListener = std::make_unique<tf2_ros::TransformListener>(*m_tfBuffer);
@@ -180,10 +186,9 @@ namespace ROS2::HumanWorker
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);
 
-                if (std::abs(BearingError) < m_acceptableAngleError)
+                if (AZStd::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
-
                     return {};
                 }
                 else
@@ -197,14 +202,14 @@ namespace ROS2::HumanWorker
         case NavigationState::Navigate:
             if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation(), m_acceptableDistanceError))
             {
-                if (++m_goalIndex == m_goalPath.size())
+                if ((m_goalIndex + 1) == m_goalPath.size())
                 {
                     m_state = NavigationState::Rotate;
-
                     return {};
                 }
+                m_startPosition = m_goalPath[m_goalIndex].m_position;
 
-                m_startPosition = m_goalPath[m_goalIndex - 1].m_position;
+                m_goalIndex++;
             }
 
             return CalculateSpeedForGoal(

@@ -26,7 +26,7 @@ namespace ROS2::HumanWorker
         if (auto* serialize = azrtti_cast<AZ::SerializeContext*>(context))
         {
             serialize->Class<NpcWaypointNavigatorComponent, NpcNavigatorComponent>()
-                ->Version(1)
+                ->Version(0)
                 ->Field("Restart on traversed", &NpcWaypointNavigatorComponent::m_restartOnTraversed)
                 ->Field("Waypoints", &NpcWaypointNavigatorComponent::m_waypointEntities);
 
@@ -88,10 +88,13 @@ namespace ROS2::HumanWorker
             if ((m_waypointConfiguration.m_idleTime -= deltaTime) <= 0.0f)
             {
                 m_goalIndex = 0;
-                if (++m_waypointIndex >= m_waypointEntities.size() && m_restartOnTraversed)
+                m_waypointIndex++;
+
+                if (m_waypointIndex >= m_waypointEntities.size() && m_restartOnTraversed)
                 {
                     m_waypointIndex = 0;
                 }
+
                 m_goalPath.clear();
                 m_waypointConfiguration = FetchWaypointConfiguration(m_waypointEntities[m_waypointIndex]);
                 m_state = NavigationState::Navigate;
@@ -107,7 +110,7 @@ namespace ROS2::HumanWorker
                     GetCurrentTransform().GetRotation().TransformVector(AZ::Vector3::CreateAxisX()),
                     m_goalPath[m_goalIndex - 1].m_direction);
 
-                if (std::abs(BearingError) < m_acceptableAngleError)
+                if (AZStd::abs(BearingError) < m_acceptableAngleError)
                 {
                     m_state = NavigationState::Idle;
                     NpcNavigatorNotificationBus::Event(
@@ -125,7 +128,7 @@ namespace ROS2::HumanWorker
         case NavigationState::Navigate:
             if (IsClose(m_goalPath[m_goalIndex].m_position, GetCurrentTransform().GetTranslation(), m_acceptableDistanceError))
             {
-                if (++m_goalIndex == m_goalPath.size())
+                if ((m_goalIndex + 1) == m_goalPath.size())
                 {
                     if (m_waypointConfiguration.m_orientationCaptured)
                     {
@@ -139,7 +142,8 @@ namespace ROS2::HumanWorker
                     }
                     return {};
                 }
-                m_startPosition = m_goalPath[m_goalIndex - 1].m_position;
+                m_startPosition = m_goalPath[m_goalIndex].m_position;
+                m_goalIndex++;
             }
 
             return CalculateSpeedForGoal(

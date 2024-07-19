@@ -27,28 +27,41 @@ namespace ROS2::HumanWorker
 
             if (AZ::EditContext* editContext = serialize->GetEditContext())
             {
-                editContext
-                    ->Class<NavigationMeshOrchestratorComponent>("Navigation Orchestrator", "")
+                editContext->Class<NavigationMeshOrchestratorComponent>("Navigation Orchestrator", "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                        ->Attribute(AZ::Edit::Attributes::Category, "ROS2")
-                        ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_shouldUpdate, "Should the mesh be updated", "")
-                        ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
+                    ->Attribute(AZ::Edit::Attributes::Category, "ROS2")
+                    ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->DataElement(
-                        AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_updateFrequency, "NavMesh Update Frequency", "")
-                        ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
-                        ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_shouldUpdate)
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive, "Use Delayed Update", "")
+                        AZ::Edit::UIHandlers::Default,
+                        &NavigationMeshOrchestratorComponent::m_shouldUpdate,
+                        "Should the mesh be updated",
+                        "")
                     ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &NavigationMeshOrchestratorComponent::m_delayedTickUpdate, "Ticks to update after", "")
-                        ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive);
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default,
+                        &NavigationMeshOrchestratorComponent::m_updateFrequency,
+                        "NavMesh Update Frequency",
+                        "")
+                    ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_shouldUpdate)
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default,
+                        &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive,
+                        "Use Delayed Update",
+                        "")
+                    ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::EntireTree)
+                    ->DataElement(
+                        AZ::Edit::UIHandlers::Default,
+                        &NavigationMeshOrchestratorComponent::m_delayedTickUpdate,
+                        "Ticks to update after",
+                        "")
+                    ->Attribute(AZ::Edit::Attributes::Visibility, &NavigationMeshOrchestratorComponent::m_delayedTickUpdateActive);
             }
         }
     }
 
     void NavigationMeshOrchestratorComponent::Activate()
     {
-        m_initialUpdate = true;
         AZ::EntityBus::Handler::BusConnect(GetEntityId());
     }
 
@@ -72,12 +85,13 @@ namespace ROS2::HumanWorker
                 UpdateNavigationMesh();
             }
         }
-
-        if (m_initialUpdate)
+        else
         {
+            // Update the navigation mesh on the first tick if it is not delayed.
+            // The navigation mesh requires a manual update and the mesh is not created automatically on the start of the simulation.
             UpdateNavigationMesh();
-            m_initialUpdate = false;
         }
+
         if (m_shouldUpdate && (m_elapsedTime += deltaTime) * m_updateFrequency > 1.0f)
         {
             m_elapsedTime = 0.0f;
