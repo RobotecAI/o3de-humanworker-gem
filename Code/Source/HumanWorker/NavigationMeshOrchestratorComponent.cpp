@@ -82,13 +82,15 @@ namespace ROS2::HumanWorker
             else
             {
                 m_delayedTickUpdateActive = false;
+                m_initialUpdate = false;
                 UpdateNavigationMesh();
             }
         }
-        else
+        else if (m_initialUpdate)
         {
             // Update the navigation mesh on the first tick if it is not delayed.
             // The navigation mesh requires a manual update and the mesh is not created automatically on the start of the simulation.
+            m_initialUpdate = false;
             UpdateNavigationMesh();
         }
 

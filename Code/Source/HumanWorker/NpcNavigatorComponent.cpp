@@ -13,6 +13,7 @@
 #include <AzCore/Component/TickBus.h>
 #include <AzCore/Component/TransformBus.h>
 #include <AzCore/EBus/Results.h>
+#include <AzCore/Math/MathUtils.h>
 #include <AzCore/Math/Vector3.h>
 #include <AzCore/RTTI/ReflectContext.h>
 #include <AzCore/Serialization/EditContext.h>
@@ -206,7 +207,27 @@ namespace ROS2::HumanWorker
         const AZ::Vector3 crossProduct = routeVector.Cross(positionVector);
         const float crossTrackError = (crossProduct.GetLength() / routeVector.GetLength()) * (crossProduct.GetZ() > 0 ? 1 : -1);
 
-        return Speed{ .m_linear = maxSpeed.m_linear, .m_angular = bearingError * maxSpeed.m_angular - crossTrackError * crossTrackFactor };
+        float targetAngular = bearingError * maxSpeed.m_angular - crossTrackError * crossTrackFactor;
+        float targetLinear = maxSpeed.m_linear;
+
+        // Check if the worker will walk in a circle around the goal
+        // If so increase the angular speed to avoid this
+        if (AZ::IsClose(targetLinear / (goal.m_position - RobotPosition).GetLength(), targetAngular, 0.1f))
+        {
+            m_preventWalkingInCircle = true;
+        }
+
+        if (m_preventWalkingInCircle)
+        {
+            targetLinear *= 0.0f;
+            // Enable linear speed when the bearing error is small
+            if (bearingError < 0.1f)
+            {
+                m_preventWalkingInCircle = false;
+            }
+        }
+
+        return Speed{ .m_linear = targetLinear, .m_angular = targetAngular };
     }
 
     NpcNavigatorComponent::PublisherPtr NpcNavigatorComponent::CreatePublisher(
