@@ -7,10 +7,12 @@ set(FILES
     Source/HumanWorker/AnimGraphInputProviderComponent.h
     Source/HumanWorker/NavigationMeshOrchestratorComponent.cpp
     Source/HumanWorker/NavigationMeshOrchestratorComponent.h
-    Source/HumanWorker/NpcNavigatorBus.h
+    Source/HumanWorker/NpcWaypointNavigatorComponent.cpp
+    Source/HumanWorker/NpcWaypointNavigatorComponent.h
+    Source/HumanWorker/NpcPoseNavigatorComponent.cpp
+    Source/HumanWorker/NpcPoseNavigatorComponent.h
     Source/HumanWorker/NpcNavigatorComponent.cpp
     Source/HumanWorker/NpcNavigatorComponent.h
-    Source/HumanWorker/WaypointBus.h
     Source/HumanWorker/WaypointComponent.cpp
     Source/HumanWorker/WaypointComponent.h
     Source/HumanWorker/WaypointSelectorComponent.cpp

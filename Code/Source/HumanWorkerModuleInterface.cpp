@@ -6,11 +6,14 @@
  *
  */
 #include "HumanWorkerModuleInterface.h"
+
 #include <AzCore/Memory/Memory.h>
 
 #include <HumanWorker/AnimGraphInputProviderComponent.h>
 #include <HumanWorker/NavigationMeshOrchestratorComponent.h>
 #include <HumanWorker/NpcNavigatorComponent.h>
+#include <HumanWorker/NpcPoseNavigatorComponent.h>
+#include <HumanWorker/NpcWaypointNavigatorComponent.h>
 #include <HumanWorker/WaypointComponent.h>
 #include <HumanWorker/WaypointSelectorComponent.h>
 
@@ -27,9 +30,10 @@ namespace HumanWorker
             {
                 ROS2::HumanWorker::AnimGraphInputProviderComponent::CreateDescriptor(),
                 ROS2::HumanWorker::NavigationMeshOrchestratorComponent::CreateDescriptor(),
-                ROS2::HumanWorker::NpcNavigatorComponent::CreateDescriptor(),
                 ROS2::HumanWorker::WaypointComponent::CreateDescriptor(),
                 ROS2::HumanWorker::WaypointSelectorComponent::CreateDescriptor(),
+                ROS2::HumanWorker::NpcWaypointNavigatorComponent::CreateDescriptor(),
+                ROS2::HumanWorker::NpcPoseNavigatorComponent::CreateDescriptor(),
             });
     }
 } // namespace HumanWorker

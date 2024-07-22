@@ -50,6 +50,8 @@ namespace ROS2::HumanWorker
         bool m_shouldUpdate{ false };
         float m_updateFrequency{ 0.1f }; //!< In Hertz.
         float m_elapsedTime{ 0.0f }; //!< In seconds.
-        bool m_initialUpdate{ false };
+        bool m_initialUpdate{ true };
+        int m_delayedTickUpdate{ 0 };
+        bool m_delayedTickUpdateActive{ false };
     };
 } // namespace ROS2::HumanWorker
