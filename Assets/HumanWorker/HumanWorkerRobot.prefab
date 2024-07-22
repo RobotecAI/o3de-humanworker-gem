@@ -214,10 +214,21 @@
                     "m_template": {
                         "$type": "NpcWaypointNavigatorComponent",
                         "Detour Navigation Entity": "",
+                        "Cross Track Factor": 0.20000000298023224,
                         "Waypoints": [
                             "",
                             ""
                         ]
+                    }
+                },
+                "ROS2FrameEditorComponent": {
+                    "$type": "ROS2FrameEditorComponent",
+                    "Id": 18218766782150271155,
+                    "ROS2FrameConfiguration": {
+                        "Namespace Configuration": {
+                            "Namespace Strategy": 2,
+                            "Namespace": "HumanWorker"
+                        }
                     }
                 },
                 "ROS2RobotControlComponent": {
@@ -234,23 +245,13 @@
                     "$type": "GenericComponentWrapper",
                     "Id": 3585149160592881723,
                     "m_template": {
-                        "$type": "RigidBodyTwistControlComponent",
-                        "DisableLinearVelocityZOverriding": true
+                        "$type": "RigidBodyTwistControlComponent"
                     }
                 },
                 "TransformComponent": {
                     "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
                     "Id": 2507038620276963239,
                     "Parent Entity": "ContainerEntity"
-                },
-                "ROS2FrameEditorComponent": {
-                    "$type": "ROS2FrameEditorComponent",
-                    "Id": 18218766782150271155,
-                    "ROS2FrameConfiguration": {
-                        "Namespace Configuration": {
-                            "Namespace Strategy": 2
-                        }
-                    }
                 }
             }
         }
