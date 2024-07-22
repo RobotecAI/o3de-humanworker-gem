@@ -205,25 +205,31 @@ namespace ROS2::HumanWorker
         const AZ::Vector3 routeVector = (goal.m_position - startPosition) * zeroZ;
         const AZ::Vector3 positionVector = (RobotPosition - startPosition) * zeroZ;
         const AZ::Vector3 crossProduct = routeVector.Cross(positionVector);
-        const float crossTrackError = (crossProduct.GetLength() / routeVector.GetLength()) * (crossProduct.GetZ() > 0 ? 1 : -1);
+        const float crossTrackError = (crossProduct.GetLength() / routeVector.GetLength()) * (crossProduct.GetZ() > 0.0f ? 1.0f : -1.0f);
 
         float targetAngular = bearingError * maxSpeed.m_angular - crossTrackError * crossTrackFactor;
         float targetLinear = maxSpeed.m_linear;
 
         // Check if the worker will walk in a circle around the goal
-        // If so increase the angular speed to avoid this
-        if (AZ::IsClose(targetLinear / (goal.m_position - RobotPosition).GetLength(), targetAngular, 0.1f))
+        // When the linear speed divided by the distance to the goal is close to the angular speed
+        // the worker will walk in a circle around the goal
+        // If so set the linear speed to 0
+        if (goal.m_position != RobotPosition &&
+            AZ::IsClose(targetLinear / (goal.m_position - RobotPosition).GetLength(), targetAngular, 0.1f))
         {
             m_preventWalkingInCircle = true;
         }
 
         if (m_preventWalkingInCircle)
         {
-            targetLinear *= 0.0f;
             // Enable linear speed when the bearing error is small
             if (bearingError < 0.1f)
             {
                 m_preventWalkingInCircle = false;
+            }
+            else
+            {
+                targetLinear = 0.0f;
             }
         }
 
