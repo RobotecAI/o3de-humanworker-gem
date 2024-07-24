@@ -133,6 +133,8 @@ if(PAL_TRAIT_BUILD_HOST_TOOLS)
                 AZ::AzToolsFramework
                 $<TARGET_OBJECTS:Gem::${gem_name}.Private.Object>
     )
+    
+    set_target_properties(${gem_name}.Editor.Private.Object PROPERTIES LINKER_LANGUAGE CXX)
 
     ly_add_target(
         NAME ${gem_name}.Editor GEM_MODULE
