@@ -34,6 +34,8 @@ namespace ROS2::HumanWorker
         , private RecastNavigation::RecastNavigationMeshNotificationBus::Handler
     {
     public:
+        static constexpr  AZ::Crc32 SafetyBubbleTag = AZ_CRC_CE("SafetyBubble");
+
         AZ_RTTI(NpcNavigatorComponent, "{BA4E4F96-A88C-406B-853B-E05911D190C4}", AZ::Component);
 
         NpcNavigatorComponent();
