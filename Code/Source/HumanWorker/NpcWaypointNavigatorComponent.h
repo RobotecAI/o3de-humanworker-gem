@@ -47,6 +47,7 @@ namespace ROS2::HumanWorker
 
         // NpcNavigatorRequestBus overrides
         void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) override;
+        void GoToLocation(const AZ::EntityId& location) override;
 
         static WaypointConfiguration FetchWaypointConfiguration(AZ::EntityId waypointEntityId);
 

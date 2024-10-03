@@ -45,6 +45,13 @@ namespace ROS2::HumanWorker
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcWaypointNavigatorComponent::m_waypointEntities, "Waypoints", "");
             }
         }
+        if (auto* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+        {
+            behaviorContext->EBus<NpcNavigatorRequestBus>("NpcNavigatorRequestBus")
+                ->Attribute(AZ::Script::Attributes::Category, "HumanWorker")
+                ->Event("SelectWaypointPath", &NpcNavigatorRequestBus::Events::SelectWaypointPath)
+                ->Event("GoToLocation", &NpcNavigatorRequestBus::Events::GoToLocation);
+        }
     }
 
     void NpcWaypointNavigatorComponent::Activate()
@@ -183,4 +190,18 @@ namespace ROS2::HumanWorker
         m_waypointEntities = waypointEntityIds;
     }
 
+    void NpcWaypointNavigatorComponent::GoToLocation(const AZ::EntityId& location)
+    {
+        if (m_waypointEntities.size() == 1 && m_waypointEntities[0] == location)
+        {
+            return;
+        }
+        m_goalIndex = 0;
+        m_goalPath.clear();
+        m_state = NavigationState::Navigate;
+        m_waypointIndex = 0;
+        m_waypointEntities.clear();
+        m_waypointEntities.push_back(location);
+        m_restartOnTraversed = false;
+    }
 } // namespace ROS2::HumanWorker
