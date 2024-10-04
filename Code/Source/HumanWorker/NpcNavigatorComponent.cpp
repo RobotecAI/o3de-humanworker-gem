@@ -26,6 +26,8 @@
 #include <ROS2/Utilities/ROS2Names.h>
 #include <RecastNavigation/DetourNavigationBus.h>
 #include <RecastNavigation/RecastNavigationMeshBus.h>
+#include <LmbrCentral/Shape/ShapeComponentBus.h>
+#include <LmbrCentral/Scripting/TagComponentBus.h>
 
 namespace ROS2::HumanWorker
 {
@@ -192,6 +194,24 @@ namespace ROS2::HumanWorker
     {
         const AZ::Vector3 RobotPosition = currentTransform.GetTranslation();
         const AZ::Vector3 RobotDirection = currentTransform.GetBasisX().GetNormalized();
+
+
+        // get deny bubble entities
+        AZ::EBusAggregateResults<AZ::EntityId> aggregator;
+        LmbrCentral::TagGlobalRequestBus::EventResult(aggregator, SafetyBubbleTag, &LmbrCentral::TagGlobalRequests::RequestTaggedEntities);
+
+        for (const AZ::EntityId& denyBubbleEntity : aggregator.values)
+        {
+            bool isInside = false;
+
+            LmbrCentral::ShapeComponentRequestsBus::EventResult(
+                isInside, denyBubbleEntity, &LmbrCentral::ShapeComponentRequests::IsPointInside, RobotPosition);
+            if (isInside)
+            {
+                return { .m_linear = 0.0f, .m_angular = 0.0f };
+            }
+        }
+
 
         float bearingError = 0.0f;
         if (goal.m_position != RobotPosition)
