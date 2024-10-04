@@ -28,6 +28,7 @@
 #include <RecastNavigation/RecastNavigationMeshBus.h>
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 #include <LmbrCentral/Scripting/TagComponentBus.h>
+
 namespace ROS2::HumanWorker
 {
     NpcNavigatorComponent::NpcNavigatorComponent()
