@@ -10,7 +10,7 @@
 
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/EBus/EBus.h>
-
+#include <AzCore/std/containers/vector.h>
 #include <HumanWorker/WaypointBus.h>
 
 namespace ROS2::HumanWorker
@@ -24,6 +24,9 @@ namespace ROS2::HumanWorker
         //! Selects a path for the npc to navigate.
         //! @param waypointEntityIds The entity ids of the waypoints that make up the path.
         virtual void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) = 0;
+
+        //! Select new waypoint et given location to navigate to.
+        virtual void GoToLocation(const AZ::EntityId& location) =0;
     };
 
     class NpcNavigatorRequestBusTraits : public AZ::EBusTraits
@@ -35,6 +38,7 @@ namespace ROS2::HumanWorker
         static constexpr AZ::EBusAddressPolicy AddressPolicy = AZ::EBusAddressPolicy::ById;
         using BusIdType = AZ::EntityId;
         //////////////////////////////////////////////////////////////////////////
+
     };
 
     using NpcNavigatorRequestBus = AZ::EBus<NpcNavigatorRequests, NpcNavigatorRequestBusTraits>;
