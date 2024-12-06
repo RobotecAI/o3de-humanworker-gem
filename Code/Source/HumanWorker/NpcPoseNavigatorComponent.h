@@ -23,7 +23,7 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class NpcPoseNavigatorComponent : public NpcNavigatorComponent
     {
@@ -55,4 +55,4 @@ namespace ROS2::HumanWorker
         std::unique_ptr<tf2_ros::Buffer> m_tfBuffer = nullptr;
         std::unique_ptr<tf2_ros::TransformListener> m_tfListener = nullptr;
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

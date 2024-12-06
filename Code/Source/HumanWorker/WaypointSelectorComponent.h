@@ -15,7 +15,7 @@
 #include <AzCore/std/containers/vector.h>
 #include <random>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     //! Component used to construct a randomized path
     //! from a provided waypoint set for selected Npc Navigators.
@@ -48,4 +48,4 @@ namespace ROS2::HumanWorker
         std::mt19937 m_mersenneTwister{ m_seed };
         AZStd::vector<AZ::EntityId> m_humanNpcs, m_waypoints;
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

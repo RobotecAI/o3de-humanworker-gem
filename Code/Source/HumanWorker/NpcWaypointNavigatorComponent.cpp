@@ -12,12 +12,8 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>
-#include <ROS2/Frame/ROS2FrameComponent.h>
-#include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
-#include <ROS2/Utilities/ROS2Names.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void NpcWaypointNavigatorComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -204,4 +200,4 @@ namespace ROS2::HumanWorker
         m_waypointEntities.push_back(location);
         m_restartOnTraversed = false;
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

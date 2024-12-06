@@ -8,7 +8,7 @@
  */
 #pragma once
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     struct WaypointConfiguration
     {
@@ -39,4 +39,4 @@ namespace ROS2::HumanWorker
         bool m_orientationCaptured{ false };
         float m_idleTime{ 0 };
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

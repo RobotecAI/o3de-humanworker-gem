@@ -13,7 +13,7 @@
 #include <AzCore/std/containers/vector.h>
 #include <HumanWorker/WaypointBus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class NpcNavigatorRequests
     {
@@ -26,7 +26,7 @@ namespace ROS2::HumanWorker
         virtual void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) = 0;
 
         //! Select new waypoint et given location to navigate to.
-        virtual void GoToLocation(const AZ::EntityId& location) =0;
+        virtual void GoToLocation(const AZ::EntityId& location) = 0;
     };
 
     class NpcNavigatorRequestBusTraits : public AZ::EBusTraits
@@ -38,13 +38,11 @@ namespace ROS2::HumanWorker
         static constexpr AZ::EBusAddressPolicy AddressPolicy = AZ::EBusAddressPolicy::ById;
         using BusIdType = AZ::EntityId;
         //////////////////////////////////////////////////////////////////////////
-
     };
 
     using NpcNavigatorRequestBus = AZ::EBus<NpcNavigatorRequests, NpcNavigatorRequestBusTraits>;
 
-    class NpcNavigatorNotifications
-        : public AZ::EBusTraits
+    class NpcNavigatorNotifications : public AZ::EBusTraits
     {
     public:
         //////////////////////////////////////////////////////////////////////////
@@ -56,8 +54,10 @@ namespace ROS2::HumanWorker
 
         //! Notification that the npc has reached a waypoint.
         //! @param waypointConfig The configuration of the waypoint that was reached.
-        virtual void OnWaypointReached([[maybe_unused]] WaypointConfiguration waypointConfig) {}
+        virtual void OnWaypointReached([[maybe_unused]] WaypointConfiguration waypointConfig)
+        {
+        }
     };
 
     using NpcNavigatorNotificationBus = AZ::EBus<NpcNavigatorNotifications>;
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

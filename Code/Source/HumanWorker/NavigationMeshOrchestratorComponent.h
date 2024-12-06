@@ -15,7 +15,7 @@
 #include <AzFramework/Entity/EntityDebugDisplayBus.h>
 #include <ROS2/Communication/TopicConfiguration.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class NavigationMeshOrchestratorComponent
         : public AZ::Component
@@ -54,4 +54,4 @@ namespace ROS2::HumanWorker
         int m_delayedTickUpdate{ 0 };
         bool m_delayedTickUpdateActive{ false };
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker
