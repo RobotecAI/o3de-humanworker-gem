@@ -14,7 +14,7 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <HumanWorker/WaypointConfiguration.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class WaypointRequests
     {
@@ -37,4 +37,4 @@ namespace ROS2::HumanWorker
     };
 
     using WaypointRequestBus = AZ::EBus<WaypointRequests, WaypointRequestBusTraits>;
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

@@ -12,7 +12,7 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <HumanWorker/WaypointBus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     //! Component that signifies a waypoint.
     //! The waypoint may be configured to capture its orientation
@@ -41,4 +41,4 @@ namespace ROS2::HumanWorker
     private:
         WaypointConfiguration m_configuration;
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

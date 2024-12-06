@@ -23,7 +23,7 @@
 #include <ROS2/Utilities/ROS2Conversions.h>
 #include <ROS2/Utilities/ROS2Names.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     NpcPoseNavigatorComponent::NpcPoseNavigatorComponent()
         : NpcNavigatorComponent()
@@ -226,4 +226,4 @@ namespace ROS2::HumanWorker
         m_goalIndex = 0;
         m_goalPath = TryFindGoalPath();
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

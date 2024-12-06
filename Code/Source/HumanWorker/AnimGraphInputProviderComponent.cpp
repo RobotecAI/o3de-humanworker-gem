@@ -13,7 +13,7 @@
 #include <LmbrCentral/Shape/SplineComponentBus.h>
 #include <ROS2/ROS2Bus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void AnimGraphInputProviderComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -29,7 +29,7 @@ namespace ROS2::HumanWorker
                 editContext
                     ->Class<AnimGraphInputProviderComponent>("AnimGraph Input Provider", "Component that feeds the anim graph input.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ROS2")
+                    ->Attribute(AZ::Edit::Attributes::Category, "HumanWorker")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->DataElement(AZ::Edit::UIHandlers::Default, &AnimGraphInputProviderComponent::m_rigidBodyEntityId, "Rigid Body", "")
                     ->DataElement(
@@ -79,4 +79,4 @@ namespace ROS2::HumanWorker
             "Speed",
             linearSpeed * m_linearSpeedMultiplier);
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker
