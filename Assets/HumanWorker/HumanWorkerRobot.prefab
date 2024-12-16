@@ -176,6 +176,12 @@
                     "$type": "EditorShapeColliderComponent",
                     "Id": 1657780093315026513,
                     "ColliderConfiguration": {
+                        "CollisionLayer": {
+                            "Index": 3
+                        },
+                        "CollisionGroupId": {
+                            "GroupId": "{72AB7AF0-F57A-4DA8-8498-3DBCF3789BAE}"
+                        },
                         "Position": [
                             0.0,
                             0.0,
