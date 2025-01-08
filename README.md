@@ -38,6 +38,26 @@ Human worker objects are delivered as O3DE _prefabs_, containing visual models a
 - `HumanWorkerNavigationMesh` is a scene descriptor component presenting the mesh where the NPC can move based on its movement capabilities and the scene itself. Please check [Recast framework documentation](https://recastnav.com) for more details. Tunable parameters include the size of the bounding box for mesh calculation and NPC characteristics. Please note, that all `Endpoints` need to be within the bounding box.
 - `DetourNavigation` is a scene descriptor component for finding the path between the `Endpoints` within the navigation mesh.
 
+## Release notes
+### 2.0.0 for O3DE 2409.x
+Changes compared to `1.1.0`
+- Modified to work with `ROS2 Gem >= 3.1.0`
+- Added _ScriptCanvas_ and _LUA_ support
+- Added safety bubble (to stop NPC when inside a tagged space)
+- Modified `NpcNavigatorRequestBus` to include `GoToLocation`
+- Changed the namespace from `ROS2::HumanWorker` to `HumanWorker`
+- Fixed prefabs
+- Fixed build (switched off non-existing tests; modified cmake)
+
+### 1.1.0 for O3DE 2310.x
+Changes compared to `1.0.0`
+- Added `NpcNavigatorNotificationBus` to notify about reaching the waypoint, refactor `NpcNavigatorRequestBus` to pass multiple waypoints at once
+- Fixed prefabs
+- Improved materials
+
+### 1.0.0 for O3DE 2310.x
+Initial release prepared for initial version of [ROSCon2023Demo](https://github.com/RobotecAI/ROSCon2023Demo)
+
 ---
 
 This work is licensed under [Apache License, Version 2.0][apache]. You may elect at your option to use the [MIT License][mit] instead. Contributions must be made under both licenses.
