@@ -13,7 +13,7 @@
 #include <AzCore/Component/EntityId.h>
 #include <AzCore/Component/TickBus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class AnimGraphInputProviderComponent
         : public AZ::Component
@@ -47,4 +47,4 @@ namespace ROS2::HumanWorker
         AZ::EntityId m_rigidBodyEntityId;
         float m_linearSpeedMultiplier{ 0.05f };
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

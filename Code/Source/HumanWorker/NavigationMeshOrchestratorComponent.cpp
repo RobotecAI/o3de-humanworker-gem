@@ -12,7 +12,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <RecastNavigation/RecastNavigationMeshBus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void NavigationMeshOrchestratorComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -29,7 +29,7 @@ namespace ROS2::HumanWorker
             {
                 editContext->Class<NavigationMeshOrchestratorComponent>("Navigation Orchestrator", "")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ROS2")
+                    ->Attribute(AZ::Edit::Attributes::Category, "HumanWorker")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->DataElement(
                         AZ::Edit::UIHandlers::Default,
@@ -112,4 +112,4 @@ namespace ROS2::HumanWorker
         RecastNavigation::RecastNavigationMeshRequestBus::EventResult(
             success, GetEntityId(), &RecastNavigation::RecastNavigationMeshRequests::UpdateNavigationMeshBlockUntilCompleted);
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

@@ -17,11 +17,10 @@
 #include <AzCore/Math/Vector3.h>
 #include <AzCore/std/containers/queue.h>
 #include <AzCore/std/containers/vector.h>
-#include <ROS2/Communication/TopicConfiguration.h>
 #include <geometry_msgs/msg/twist.hpp>
 #include <rclcpp/publisher.hpp>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class NpcWaypointNavigatorComponent
         : public NpcNavigatorComponent
@@ -47,6 +46,7 @@ namespace ROS2::HumanWorker
 
         // NpcNavigatorRequestBus overrides
         void SelectWaypointPath(const AZStd::vector<AZ::EntityId>& waypointEntityIds) override;
+        void GoToLocation(const AZ::EntityId& location) override;
 
         static WaypointConfiguration FetchWaypointConfiguration(AZ::EntityId waypointEntityId);
 
@@ -56,4 +56,4 @@ namespace ROS2::HumanWorker
 
         bool m_restartOnTraversed{ true };
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

@@ -28,12 +28,12 @@ namespace HumanWorker
         m_descriptors.insert(
             m_descriptors.end(),
             {
-                ROS2::HumanWorker::AnimGraphInputProviderComponent::CreateDescriptor(),
-                ROS2::HumanWorker::NavigationMeshOrchestratorComponent::CreateDescriptor(),
-                ROS2::HumanWorker::WaypointComponent::CreateDescriptor(),
-                ROS2::HumanWorker::WaypointSelectorComponent::CreateDescriptor(),
-                ROS2::HumanWorker::NpcWaypointNavigatorComponent::CreateDescriptor(),
-                ROS2::HumanWorker::NpcPoseNavigatorComponent::CreateDescriptor(),
+                HumanWorker::AnimGraphInputProviderComponent::CreateDescriptor(),
+                HumanWorker::NavigationMeshOrchestratorComponent::CreateDescriptor(),
+                HumanWorker::WaypointComponent::CreateDescriptor(),
+                HumanWorker::WaypointSelectorComponent::CreateDescriptor(),
+                HumanWorker::NpcWaypointNavigatorComponent::CreateDescriptor(),
+                HumanWorker::NpcPoseNavigatorComponent::CreateDescriptor(),
             });
     }
 } // namespace HumanWorker

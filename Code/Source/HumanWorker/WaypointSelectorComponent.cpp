@@ -9,7 +9,7 @@
 #include <HumanWorker/NpcNavigatorBus.h>
 #include <HumanWorker/WaypointSelectorComponent.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void WaypointSelectorComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -82,4 +82,4 @@ namespace ROS2::HumanWorker
 
         return waypointPath;
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

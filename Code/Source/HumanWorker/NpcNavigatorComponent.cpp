@@ -20,6 +20,7 @@
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>
 #include <LmbrCentral/Scripting/TagComponentBus.h>
+#include <LmbrCentral/Shape/ShapeComponentBus.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
 #include <ROS2/ROS2GemUtilities.h>
@@ -27,7 +28,7 @@
 #include <RecastNavigation/DetourNavigationBus.h>
 #include <RecastNavigation/RecastNavigationMeshBus.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     NpcNavigatorComponent::NpcNavigatorComponent()
     {
@@ -193,6 +194,22 @@ namespace ROS2::HumanWorker
         const AZ::Vector3 RobotPosition = currentTransform.GetTranslation();
         const AZ::Vector3 RobotDirection = currentTransform.GetBasisX().GetNormalized();
 
+        // get deny bubble entities
+        AZ::EBusAggregateResults<AZ::EntityId> aggregator;
+        LmbrCentral::TagGlobalRequestBus::EventResult(aggregator, SafetyBubbleTag, &LmbrCentral::TagGlobalRequests::RequestTaggedEntities);
+
+        for (const AZ::EntityId& denyBubbleEntity : aggregator.values)
+        {
+            bool isInside = false;
+
+            LmbrCentral::ShapeComponentRequestsBus::EventResult(
+                isInside, denyBubbleEntity, &LmbrCentral::ShapeComponentRequests::IsPointInside, RobotPosition);
+            if (isInside)
+            {
+                return { .m_linear = 0.0f, .m_angular = 0.0f };
+            }
+        }
+
         float bearingError = 0.0f;
         if (goal.m_position != RobotPosition)
         {
@@ -237,7 +254,7 @@ namespace ROS2::HumanWorker
     }
 
     NpcNavigatorComponent::PublisherPtr NpcNavigatorComponent::CreatePublisher(
-        ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration)
+        ROS2::ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration)
     {
         auto ros2Node = ROS2::ROS2Interface::Get()->GetNode();
         const auto& topicName = ROS2::ROS2Names::GetNamespacedName(frame->GetNamespace(), topicConfiguration.m_topic);
@@ -346,4 +363,4 @@ namespace ROS2::HumanWorker
     {
         return !m_useTagsForNavigationMesh;
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

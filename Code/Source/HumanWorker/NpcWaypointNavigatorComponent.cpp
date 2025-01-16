@@ -12,12 +12,8 @@
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/Serialization/SerializeContext.h>
 #include <HumanWorker/WaypointBus.h>
-#include <ROS2/Frame/ROS2FrameComponent.h>
-#include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
-#include <ROS2/Utilities/ROS2Names.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void NpcWaypointNavigatorComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -44,6 +40,13 @@ namespace ROS2::HumanWorker
                         AZ::Edit::UIHandlers::Default, &NpcWaypointNavigatorComponent::m_restartOnTraversed, "Restart on traversed", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &NpcWaypointNavigatorComponent::m_waypointEntities, "Waypoints", "");
             }
+        }
+        if (auto* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
+        {
+            behaviorContext->EBus<NpcNavigatorRequestBus>("NpcNavigatorRequestBus")
+                ->Attribute(AZ::Script::Attributes::Category, "HumanWorker")
+                ->Event("SelectWaypointPath", &NpcNavigatorRequestBus::Events::SelectWaypointPath)
+                ->Event("GoToLocation", &NpcNavigatorRequestBus::Events::GoToLocation);
         }
     }
 
@@ -183,4 +186,18 @@ namespace ROS2::HumanWorker
         m_waypointEntities = waypointEntityIds;
     }
 
-} // namespace ROS2::HumanWorker
+    void NpcWaypointNavigatorComponent::GoToLocation(const AZ::EntityId& location)
+    {
+        if (m_waypointEntities.size() == 1 && m_waypointEntities[0] == location)
+        {
+            return;
+        }
+        m_goalIndex = 0;
+        m_goalPath.clear();
+        m_state = NavigationState::Navigate;
+        m_waypointIndex = 0;
+        m_waypointEntities.clear();
+        m_waypointEntities.push_back(location);
+        m_restartOnTraversed = false;
+    }
+} // namespace HumanWorker

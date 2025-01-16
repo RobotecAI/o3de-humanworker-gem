@@ -525,12 +525,12 @@
                     "value": "../Entity_[9879863788140]"
                 },
                 {
-                    "op": "replace",
+                    "op": "add",
                     "path": "/Entities/Entity_[66011467218485]/Components/NpcWaypointNavigatorComponent/m_template/Waypoints/0",
                     "value": "../Entity_[9871273853548]"
                 },
                 {
-                    "op": "replace",
+                    "op": "add",
                     "path": "/Entities/Entity_[66011467218485]/Components/NpcWaypointNavigatorComponent/m_template/Waypoints/1",
                     "value": "../Entity_[9862683918956]"
                 }

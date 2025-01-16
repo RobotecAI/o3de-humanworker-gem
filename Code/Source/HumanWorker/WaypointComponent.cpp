@@ -8,7 +8,7 @@
  */
 #include <HumanWorker/WaypointComponent.h>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     void WaypointComponent::Reflect(AZ::ReflectContext* context)
     {
@@ -24,7 +24,7 @@ namespace ROS2::HumanWorker
                 editContext
                     ->Class<WaypointComponent>("Waypoint", "Waypoint")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                        ->Attribute(AZ::Edit::Attributes::Category, "ROS2")
+                        ->Attribute(AZ::Edit::Attributes::Category, "HumanWorker")
                         ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ->DataElement(AZ::Edit::UIHandlers::Default, &WaypointComponent::m_configuration, "Waypoint Configuration", "Waypoint Configuration");
                 // clang-format on
@@ -46,4 +46,4 @@ namespace ROS2::HumanWorker
     {
         return m_configuration;
     }
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker

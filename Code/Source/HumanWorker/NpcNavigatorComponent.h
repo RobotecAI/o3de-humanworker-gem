@@ -25,7 +25,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <rclcpp/publisher.hpp>
 
-namespace ROS2::HumanWorker
+namespace HumanWorker
 {
     class NpcNavigatorComponent
         : public AZ::Component
@@ -34,6 +34,8 @@ namespace ROS2::HumanWorker
         , private RecastNavigation::RecastNavigationMeshNotificationBus::Handler
     {
     public:
+        static constexpr AZ::Crc32 SafetyBubbleTag = AZ_CRC_CE("SafetyBubble");
+
         AZ_RTTI(NpcNavigatorComponent, "{BA4E4F96-A88C-406B-853B-E05911D190C4}", AZ::Component);
 
         NpcNavigatorComponent();
@@ -73,7 +75,7 @@ namespace ROS2::HumanWorker
         static float GetSignedAngleBetweenUnitVectors(const AZ::Vector3& unitVector1, const AZ::Vector3& unitVector2);
         static AZ::Transform GetEntityTransform(const AZ::EntityId& entityId);
         static NpcNavigatorComponent::PublisherPtr CreatePublisher(
-            ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration);
+            ROS2::ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration);
         static bool IsClose(const AZ::Vector3& vector1, const AZ::Vector3& vector2, float acceptableDistanceError);
         [[nodiscard]] AZ::Transform GetCurrentTransform() const;
 
@@ -144,7 +146,7 @@ namespace ROS2::HumanWorker
         bool m_preventWalkingInCircle{ false };
 
         // ROS2 communication variables
-        TopicConfiguration m_twistTopicConfiguration;
+        ROS2::TopicConfiguration m_twistTopicConfiguration;
         PublisherPtr m_publisher;
     };
-} // namespace ROS2::HumanWorker
+} // namespace HumanWorker
