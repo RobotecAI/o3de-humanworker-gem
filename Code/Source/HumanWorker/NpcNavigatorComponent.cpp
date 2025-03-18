@@ -131,8 +131,11 @@ namespace HumanWorker
                         }
                     }
                 }
-
-                RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(GetNavigationMeshEntityId(m_navigationEntity));
+                const auto meshEntityId = GetNavigationMeshEntityId(m_navigationEntity);
+                if (meshEntityId.IsValid())
+                {
+                    RecastNavigation::RecastNavigationMeshNotificationBus::Handler::BusConnect(meshEntityId);
+                }
                 if (m_debugMode)
                 {
                     AzFramework::EntityDebugDisplayEventBus::Handler::BusConnect(m_entity->GetId());
