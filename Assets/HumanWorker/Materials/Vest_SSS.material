@@ -1,5 +1,5 @@
 {
-    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/enhancedpbr_generated.materialtype",
+    "materialType": "@gemroot:Atom_Feature_Common@/Assets/Materials/Types/EnhancedPBR.materialtype",
     "materialTypeVersion": 6,
     "propertyValues": {
         "baseColor.textureBlendMode": "Lerp",
@@ -13,6 +13,9 @@
         "normal.textureMapUv": "Unwrapped",
         "occlusion.diffuseTextureMap": "../Textures/Vest_ao.png",
         "occlusion.diffuseTextureMapUv": "Unwrapped",
+        "opacity.alphaAffectsSpecular": 1.0,
+        "opacity.factor": 0.0,
+        "opacity.mode": "Blended",
         "roughness.factor": 0.25999999046325684,
         "roughness.lowerBound": 0.5299999713897705,
         "roughness.textureMap": "../Textures/Vest_roughness.png",

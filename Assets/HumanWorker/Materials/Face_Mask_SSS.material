@@ -1,9 +1,12 @@
 {
-    "materialType": "@projectroot@/Cache/Intermediate Assets/materials/types/enhancedpbr_generated.materialtype",
+    "materialType": "@gemroot:Atom_Feature_Common@/Assets/Materials/Types/EnhancedPBR.materialtype",
     "materialTypeVersion": 6,
     "propertyValues": {
         "baseColor.textureMap": "../Textures/Mask_base_color.png",
         "normal.textureMap": "../Textures/Mask_normal.jpg",
+        "opacity.alphaAffectsSpecular": 1.0,
+        "opacity.factor": 0.0,
+        "opacity.mode": "Blended",
         "roughness.textureMap": "../Textures/Mask_roughness.png",
         "roughness.textureMapUv": "Unwrapped",
         "subsurfaceScattering.distanceAttenuation": 0.5199999809265137,
