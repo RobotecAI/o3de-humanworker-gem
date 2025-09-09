@@ -23,8 +23,6 @@
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
-#include <ROS2/Utilities/ROS2Names.h>
 #include <RecastNavigation/DetourNavigationBus.h>
 #include <RecastNavigation/RecastNavigationMeshBus.h>
 
@@ -142,8 +140,7 @@ namespace HumanWorker
                 }
             });
 
-        m_publisher =
-            CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_twistTopicConfiguration);
+        m_publisher = CreatePublisher(GetEntity()->FindComponent<ROS2::ROS2FrameComponent>(), m_twistTopicConfiguration);
 
         AZ::TickBus::Handler::BusConnect();
 
@@ -260,7 +257,9 @@ namespace HumanWorker
         ROS2::ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration)
     {
         auto ros2Node = ROS2::ROS2Interface::Get()->GetNode();
-        const auto& topicName = ROS2::ROS2Names::GetNamespacedName(frame->GetNamespace(), topicConfiguration.m_topic);
+        AZStd::string topicName = "";
+        ROS2::ROS2NamesRequestBus::BroadcastResult(
+            topicName, &ROS2::ROS2NamesRequests::GetNamespacedName, frame->GetNamespace(), topicConfiguration.m_topic);
         const auto& qos = topicConfiguration.GetQoS();
         return ros2Node->create_publisher<geometry_msgs::msg::Twist>(topicName.data(), qos);
     }

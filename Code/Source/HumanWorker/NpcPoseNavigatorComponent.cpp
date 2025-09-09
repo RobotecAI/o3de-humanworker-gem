@@ -19,9 +19,7 @@
 #include <AzCore/std/parallel/mutex.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
 #include <ROS2/Utilities/ROS2Conversions.h>
-#include <ROS2/Utilities/ROS2Names.h>
 
 namespace HumanWorker
 {
@@ -73,7 +71,18 @@ namespace HumanWorker
         }
 
         const auto* ros2FrameComponent = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
-        auto namespacedTopicName = ROS2::ROS2Names::GetNamespacedName(ros2FrameComponent->GetNamespace(), m_poseTopicConfiguration.m_topic);
+        AZStd::string namespacedTopicName = "";
+        ROS2::ROS2NamesRequestBus::BroadcastResult(
+            namespacedTopicName,
+            &ROS2::ROS2NamesRequests::GetNamespacedName,
+            ros2FrameComponent->GetNamespace(),
+            m_poseTopicConfiguration.m_topic);
+
+        if (namespacedTopicName.empty())
+        {
+            AZ_Error("NpcPoseNavigatorComponent", false, "Failed to get namespaced topic name.");
+            return;
+        }
 
         const AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
 
