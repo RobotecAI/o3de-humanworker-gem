@@ -84,7 +84,7 @@ namespace HumanWorker
             return;
         }
 
-        const AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
+        const AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameID();
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(ros2Node->get_clock());
         m_tfListener = std::make_unique<tf2_ros::TransformListener>(*m_tfBuffer);
