@@ -23,8 +23,6 @@
 #include <LmbrCentral/Shape/ShapeComponentBus.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
-#include <ROS2/Utilities/ROS2Names.h>
 #include <RecastNavigation/DetourNavigationBus.h>
 #include <RecastNavigation/RecastNavigationMeshBus.h>
 
@@ -142,8 +140,7 @@ namespace HumanWorker
                 }
             });
 
-        m_publisher =
-            CreatePublisher(ROS2::Utils::GetGameOrEditorComponent<ROS2::ROS2FrameComponent>(GetEntity()), m_twistTopicConfiguration);
+        m_publisher = CreatePublisher(m_twistTopicConfiguration);
 
         AZ::TickBus::Handler::BusConnect();
 
@@ -256,11 +253,22 @@ namespace HumanWorker
         return Speed{ .m_linear = targetLinear, .m_angular = targetAngular };
     }
 
-    NpcNavigatorComponent::PublisherPtr NpcNavigatorComponent::CreatePublisher(
-        ROS2::ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration)
+    NpcNavigatorComponent::PublisherPtr NpcNavigatorComponent::CreatePublisher(const ROS2::TopicConfiguration& topicConfiguration)
     {
+        AZStd::string namespaceFromFrame;
+        ROS2::ROS2FrameComponentBus::EventResult(namespaceFromFrame, m_entity->GetId(), &ROS2::ROS2FrameComponentRequests::GetNamespace);
+
         auto ros2Node = ROS2::ROS2Interface::Get()->GetNode();
-        const auto& topicName = ROS2::ROS2Names::GetNamespacedName(frame->GetNamespace(), topicConfiguration.m_topic);
+        AZStd::string namespacedFrameId;
+        AZStd::string namespacedTopicName;
+
+        ROS2::ROS2NamesRequestBus::BroadcastResult(
+            namespacedFrameId, &ROS2::ROS2NamesRequestBus::Events::GetNamespacedName, namespaceFromFrame, "odom");
+
+        ROS2::ROS2NamesRequestBus::BroadcastResult(
+            namespacedTopicName, &ROS2::ROS2NamesRequestBus::Events::GetNamespacedName, namespaceFromFrame,topicConfiguration.m_topic);
+
+        const auto& topicName = namespacedTopicName;
         const auto& qos = topicConfiguration.GetQoS();
         return ros2Node->create_publisher<geometry_msgs::msg::Twist>(topicName.data(), qos);
     }
