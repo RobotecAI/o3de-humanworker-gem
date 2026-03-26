@@ -74,8 +74,7 @@ namespace HumanWorker
         // Assumes that the argument vectors lie in the XY plane.
         static float GetSignedAngleBetweenUnitVectors(const AZ::Vector3& unitVector1, const AZ::Vector3& unitVector2);
         static AZ::Transform GetEntityTransform(const AZ::EntityId& entityId);
-        static NpcNavigatorComponent::PublisherPtr CreatePublisher(
-            ROS2::ROS2FrameComponent* frame, const ROS2::TopicConfiguration& topicConfiguration);
+        PublisherPtr CreatePublisher(const ROS2::TopicConfiguration& topicConfiguration);
         static bool IsClose(const AZ::Vector3& vector1, const AZ::Vector3& vector2, float acceptableDistanceError);
         [[nodiscard]] AZ::Transform GetCurrentTransform() const;
 
