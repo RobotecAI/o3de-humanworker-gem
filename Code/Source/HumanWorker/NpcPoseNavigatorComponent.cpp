@@ -19,9 +19,8 @@
 #include <AzCore/std/parallel/mutex.h>
 #include <ROS2/Frame/ROS2FrameComponent.h>
 #include <ROS2/ROS2Bus.h>
-#include <ROS2/ROS2GemUtilities.h>
 #include <ROS2/Utilities/ROS2Conversions.h>
-#include <ROS2/Utilities/ROS2Names.h>
+
 
 namespace HumanWorker
 {
@@ -71,11 +70,15 @@ namespace HumanWorker
             AZ_Error("NpcPoseNavigatorComponent", false, "Failed to get ROS2 node.");
             return;
         }
+        AZStd::string namespaceFromFrame;
+        ROS2::ROS2FrameComponentBus::EventResult(namespaceFromFrame, m_entity->GetId(), &ROS2::ROS2FrameComponentRequests::GetNamespace);
 
-        const auto* ros2FrameComponent = m_entity->FindComponent<ROS2::ROS2FrameComponent>();
-        auto namespacedTopicName = ROS2::ROS2Names::GetNamespacedName(ros2FrameComponent->GetNamespace(), m_poseTopicConfiguration.m_topic);
+        AZStd::string odomFrame;
+        ROS2::ROS2FrameComponentBus::EventResult(odomFrame, m_entity->GetId(), &ROS2::ROS2FrameComponentRequests::GetGlobalFrameID);
 
-        const AZStd::string odomFrame = ros2FrameComponent->GetGlobalFrameName();
+        AZStd::string namespacedTopicName;
+        ROS2::ROS2NamesRequestBus::BroadcastResult(
+            namespacedTopicName, &ROS2::ROS2NamesRequestBus::Events::GetNamespacedName, namespaceFromFrame, m_poseTopicConfiguration.m_topic);
 
         m_tfBuffer = std::make_unique<tf2_ros::Buffer>(ros2Node->get_clock());
         m_tfListener = std::make_unique<tf2_ros::TransformListener>(*m_tfBuffer);
