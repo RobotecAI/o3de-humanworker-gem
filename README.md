@@ -39,6 +39,14 @@ Human worker objects are delivered as O3DE _prefabs_, containing visual models a
 - `DetourNavigation` is a scene descriptor component for finding the path between the `Endpoints` within the navigation mesh.
 
 ## Release notes
+
+### 3.0.0 for O3DE 2510.x and O3DE 2605.x
+Changes compared to `2.0.0`
+- Modified to work with `ROS2 Gem >= 4.0.0` (set the requirements to ` >= 4.1.0`)
+
+### 2.0.1 for O3DE 2409.x
+- Added check for invalid recast navigation mesh in `NpcNavigatorComponent`
+
 ### 2.0.0 for O3DE 2409.x
 Changes compared to `1.1.0`
 - Modified to work with `ROS2 Gem >= 3.1.0`
