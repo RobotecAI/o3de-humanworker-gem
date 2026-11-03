@@ -1,4 +1,4 @@
-[![Apache License, Version 2.0][apache_shield]][apache]
+[![Apache License, Version 2.0][apache_shield]][apache] [![CC BY-NC 4.0][cc_by_nc_shield]][cc_by_nc]
 
 # HumanWorker Gem for Open 3D Engine (O3DE)
 
@@ -40,6 +40,9 @@ Human worker objects are delivered as O3DE _prefabs_, containing visual models a
 
 ## Release notes
 
+### 3.0.1 for O3DE 2510.x and O3DE 2605.x
+- Fixed licensing inconsistencies
+
 ### 3.0.0 for O3DE 2510.x and O3DE 2605.x
 Changes compared to `2.0.0`
 - Modified to work with `ROS2 Gem >= 4.0.0` (set the requirements to ` >= 4.1.0`)
@@ -68,8 +71,10 @@ Initial release prepared for initial version of [ROSCon2023Demo](https://github.
 
 ---
 
-This work is licensed under [Apache License, Version 2.0][apache]. You may elect at your option to use the [MIT License][mit] instead. Contributions must be made under both licenses.
+The code in this work is licensed under [Apache License, Version 2.0][apache]. You may elect at your option to use the [MIT License][mit] instead. Contributions must be made under both licenses. The assets (models, textures, materials, prefabs, animations) are licensed under [CC BY-NC 4.0][cc_by_nc]. See `LICENSE.txt` and `NOTICE` for details.
 
 [apache]: https://opensource.org/licenses/Apache-2.0
 [mit]: https://opensource.org/licenses/MIT
 [apache_shield]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
+[cc_by_nc]: https://creativecommons.org/licenses/by-nc/4.0/
+[cc_by_nc_shield]: https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg
