@@ -1,0 +1,7 @@
+HumanWorker Gem for Open 3D Engine
+Copyright 2023-2026 Robotec.ai sp. z o.o.
+
+Code is licensed under Apache-2.0 OR MIT; assets are licensed under CC BY-NC 4.0 (see LICENSE.txt).
+
+The character model and animations in Assets/HumanWorker/Meshes and Assets/HumanWorker/MotionMeshes were created by
+Amazon Web Services (AWS Game Tech) for the ROSCon 2023 demo, developed together with Robotec.ai.
