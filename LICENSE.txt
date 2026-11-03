@@ -1,0 +1,16 @@
+HUMANWORKER GEM FOR OPEN 3D ENGINE LICENSING
+
+CODE
+The source code and build files (Code/, CMakeLists.txt, Registry/, gem.json)
+are licensed under the Apache License, Version 2.0 (see LICENSE_APACHE2.txt);
+you may elect at your option to use them under the MIT License (see
+LICENSE_MIT.txt). Contributions must be made under both licenses.
+
+ASSETS
+The assets (files in Assets/: models, animations, textures, materials,
+prefabs, motion sets and anim graphs; images in docs/) are licensed under the
+Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC
+4.0, see LICENSE_CC_BY_NC_4.0.txt; https://creativecommons.org/licenses/by-
+nc/4.0/).
+
+Copyright and third-party attributions are listed in NOTICE.
