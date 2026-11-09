@@ -191,7 +191,14 @@
                 "Component_[314276133413116369]": {
                     "$type": "{27F1E1A1-8D9D-4C3B-BD3A-AFB9762449C0} TransformComponent",
                     "Id": 314276133413116369,
-                    "Parent Entity": "ContainerEntity"
+                    "Parent Entity": "ContainerEntity",
+                    "Transform Data": {
+                        "Rotate": [
+                            0.0,
+                            0.0,
+                            90.0
+                        ]
+                    }
                 },
                 "Component_[3339056541090683331]": {
                     "$type": "EditorEntityIconComponent",
