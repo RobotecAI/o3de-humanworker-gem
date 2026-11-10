@@ -40,6 +40,11 @@ Human worker objects are delivered as O3DE _prefabs_, containing visual models a
 
 ## Release notes
 
+### 3.1.0 for O3DE 2510.x and O3DE 2605.x
+Changes compared to `3.0.1`
+- Replaced the human worker rig with a new generic 79-bone skeleton (model, idle and walk animations); custom motions made for the previous skeleton need to be retargeted
+- Rotated the actor in `HumanWorker.prefab` and `HumanWorkerStatic.prefab` so the worker keeps its previous facing
+
 ### 3.0.1 for O3DE 2510.x and O3DE 2605.x
 - Fixed licensing inconsistencies
 
